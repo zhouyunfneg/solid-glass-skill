@@ -1,0 +1,3252 @@
+<!doctype html>
+<html lang="zh-CN" class="dark sg-tint-mauve sg-thick-default sg-rim-default sg-shadow-default">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solid Glass 旋钮台</title>
+<style>
+/* 这一页内联了三份样式：solid-glass.css（上游原文，MIT © 2026 DeepLethe）、
+   tint-presets.css 与 theme-shim.css（本仓库生成 / 补写）。
+   重新生成：node scripts/build-preview.mjs
+   页面里的业务文字是虚构示例，跟任何真实产品无关。 */
+/*
+ * Solid Glass: a theme for shadcn/ui.
+ *
+ * Import it after Tailwind and shadcn's own stylesheet, in place of the
+ * colour variables `shadcn init` writes:
+ *
+ *   @import "tailwindcss";
+ *   @import "tw-animate-css";
+ *   @import "shadcn/tailwind.css";
+ *   @import "./solid-glass.css";
+ *
+ * Solid Glass stands between flat design and liquid glass. Every surface is a
+ * thick pane of smoky glass with very little see-through: from a distance it
+ * reads as solid, and only close up as glass. What makes it glass is at its
+ * edges — a line of light along the top, a hairline all round, a shadow
+ * gathered underneath. The face itself is neutral grey: it takes no colour
+ * from what is behind it, bends nothing and does not flow.
+ *
+ * Four rules keep it one material:
+ *
+ *   1. The finish is at the edge.   rim + hairline + shadow, never a gradient
+ *                                   across the face.
+ *   2. Heavy, not airy.             neutral grey; the blur softens what is
+ *                                   behind without boosting its colour.
+ *   3. Depth is thickness.          panel (thinnest) < card < popover
+ *                                   (thickest). Thicker is more opaque.
+ *   4. One state.                   hovered, chosen and held-open all wear
+ *                                   the same small pane of clear glass.
+ *
+ * The names are shadcn/ui's (--background, --card, --popover, --muted …), so
+ * every shadcn component takes the material by using the colour it already
+ * used: nothing in components/ui has to change. Dark is the material as
+ * designed; light is the same panes in daylight. Dark follows the `dark`
+ * class on <html>.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-panel: var(--panel);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-muted: var(--brand-muted);
+  --color-link: var(--link);
+  --color-status-running: var(--status-running);
+  --color-status-done: var(--status-done);
+  --color-status-interrupted: var(--status-interrupted);
+  --color-success: var(--success);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ---- The panes in daylight ------------------------------------------------ */
+
+:root {
+  --radius: 0.875rem;
+  /* What a control is rounded by: a step down from a pane. */
+  --radius-control: 0.7rem;
+
+  /* The page is opaque, a cool grey deep enough for a pane to stand out on;
+     the panes on it are smoked white glass, not paper. */
+  --background: oklch(0.925 0.007 265);
+  --foreground: oklch(0.16 0 0);
+
+  /* Thickness: panel < card < popover. */
+  --panel: oklch(0.975 0.004 265 / 44%);
+  --card: oklch(0.98 0.004 265 / 60%);
+  --card-foreground: oklch(0.16 0 0);
+  --popover: oklch(0.985 0.003 265 / 96%);
+  --popover-foreground: oklch(0.16 0 0);
+
+  --primary: oklch(0.2 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.3 0.02 265 / 9%);
+  --secondary-foreground: oklch(0.2 0 0);
+  --muted: oklch(0.3 0.02 265 / 7%);
+  --muted-foreground: oklch(0.47 0 0);
+  --accent: oklch(0.3 0.02 265 / 9%);
+  --accent-foreground: oklch(0.2 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.3 0.02 265 / 13%);
+  --input: oklch(0.3 0.02 265 / 15%);
+  --ring: oklch(0.7 0 0);
+
+  /* The finish. Rim: the line of light on a pane's top edge. Inner: a faint
+     second line inside it. Edge: the hairline round the outside. Shade: the
+     shadow underneath. */
+  --glass-rim: oklch(1 0 0 / 90%);
+  --glass-inner: oklch(1 0 0 / 35%);
+  --glass-edge: oklch(0.38 0.03 265 / 10%);
+  /* The thickest pane, nearly white on a pale page, would lose its edge in
+     the light: it keeps it by a firmer hairline and a shade along its foot. */
+  --popover-edge: oklch(0.38 0.03 265 / 22%);
+  --popover-under: oklch(0.38 0.03 265 / 16%);
+  --glass-shade: oklch(0.3 0.06 265 / 28%);
+  --glass-contact: oklch(0.25 0.03 265 / 6%);
+  --glass-lift: oklch(0.25 0.03 265 / 14%);
+  /* Clear glass, for small things and for the one state. */
+  --glass-control: oklch(1 0 0 / 55%);
+  --glass-control-rim: oklch(1 0 0 / 80%);
+  /* The one state. On white panes a pane of clear glass would be white on
+     white, so here it is the smoked kind: a grey tint, still lit along its
+     top edge, with a hairline dark enough to find. */
+  --glass-state: oklch(0.3 0.02 265 / 9%);
+  --glass-state-rim: oklch(1 0 0 / 85%);
+  --glass-state-edge: oklch(0.3 0.02 265 / 13%);
+  --glass-state-armed: oklch(0.3 0.02 265 / 26%);
+  /* Under the pointer. The greys shadcn/ui hovers with are tuned for a dark
+     page, where 7% of white shows; on white panes the same step vanishes. */
+  --hover: oklch(0.3 0.02 265 / 10%);
+  --hover-faint: oklch(0.3 0.02 265 / 5.5%);
+  /* The primary button is a solid pane the colour of the ink: lit along its
+     top edge, shaded along its bottom one, a hairline round it. */
+  --primary-solid: 88%;
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 45%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+  /* A field is a pane of clear glass to type on: its fill, and the line of
+     light along its top edge. */
+  --field: oklch(1 0 0 / 60%);
+  --field-rim: oklch(1 0 0);
+  --field-edge: oklch(0.3 0.02 265 / 14%);
+  /* A track a knob runs in is a groove: shaded under its upper lip, lit along
+     its lower one. */
+  --well-shade: oklch(0.3 0.06 265 / 14%);
+  --well-rim: oklch(1 0 0 / 85%);
+  /* The line a field is drawn in while it is being typed into. */
+  --focus-line: oklch(0.2 0 0 / 50%);
+  /* A knob — a switch's thumb, a slider's — is the brightest pane there is. */
+  --knob: oklch(1 0 0);
+  --knob-shade: oklch(0.3 0.06 265 / 30%);
+  /* A mark in a chart is a pane standing on its edge. */
+  --mark-solid: 84%;
+  --mark-rim: oklch(1 0 0);
+  --mark-edge: oklch(0.3 0.02 265 / 22%);
+  /* The same hairline where it is a stroke in a chart: half of a stroke falls outside the shape. */
+  --mark-line: oklch(0.3 0.02 265 / 30%);
+  --glass-blur: blur(26px) saturate(180%);
+  --glass-blur-control: blur(14px);
+
+  /* Three sources of light under the glass, kept faint enough that the page
+     still reads as one even surface. Dark has none. */
+  --light-1: oklch(0.68 0.13 165 / 7%);
+  --light-2: oklch(0.75 0.08 240 / 11%);
+  --light-3: oklch(0.68 0.13 165 / 4%);
+
+  --brand: oklch(0.68 0.13 165);
+  --brand-foreground: oklch(0.99 0 0);
+  --brand-muted: oklch(0.68 0.13 165 / 12%);
+
+  /* Motion means running; hue means finished or stopped. */
+  --status-running: oklch(0.52 0 0);
+  --status-done: oklch(0.56 0.16 248);
+  --success: oklch(0.58 0.15 152);
+  --status-interrupted: oklch(0.66 0.16 58);
+
+  /* Links, a name in running text, and the few colours code is set in. */
+  --link: oklch(0.5 0.17 255);
+  --code-inline: oklch(0.53 0.17 22);
+  --syn-keyword: oklch(0.45 0.13 255);
+  --syn-string: oklch(0.5 0.12 160);
+  --syn-number: oklch(0.55 0.14 60);
+  --syn-name: oklch(0.47 0.15 310);
+
+  /* Charts are drawn in greys, like the rest: no hue of their own. The first is the one most
+     charts lead with and the second is what it is set against, so the first is a mid-tone that
+     still reads on a card and the widest step is between those two; the rest close up from there. */
+  --chart-1: oklch(0.7 0 0);
+  --chart-2: oklch(0.54 0 0);
+  --chart-3: oklch(0.44 0 0);
+  --chart-4: oklch(0.35 0 0);
+  --chart-5: oklch(0.27 0 0);
+
+  --sidebar: oklch(0.975 0.004 265 / 44%);
+  --sidebar-foreground: oklch(0.25 0 0);
+  --sidebar-primary: oklch(0.2 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.3 0.02 265 / 9%);
+  --sidebar-accent-foreground: oklch(0.16 0 0);
+  --sidebar-border: oklch(0.3 0.02 265 / 12%);
+  --sidebar-ring: oklch(0.7 0 0);
+}
+
+/* ---- Solid Glass ----------------------------------------------------------
+
+   An even, unlit page, and the glass turns smoky. There is no ambient light:
+   on a dark page it reads as a bright patch and a vignette, and uneven ground
+   behind long text is tiring to work on. Text is close to white. */
+
+.dark {
+  color-scheme: dark;
+
+  --background: oklch(0.16 0 0);
+  --foreground: oklch(0.985 0 0);
+
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0 0 / 46%);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.22 0 0 / 96%);
+  --popover-foreground: oklch(0.985 0 0);
+
+  --primary: oklch(0.94 0 0);
+  --primary-foreground: oklch(0.18 0 0);
+  --secondary: oklch(1 0 0 / 10%);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(1 0 0 / 7%);
+  --muted-foreground: oklch(0.72 0 0);
+  --accent: oklch(1 0 0 / 8%);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.52 0 0);
+
+  --glass-rim: oklch(1 0 0 / 16%);
+  --glass-inner: oklch(1 0 0 / 4%);
+  --glass-edge: oklch(1 0 0 / 6%);
+  --popover-edge: var(--glass-edge);
+  --popover-under: oklch(0 0 0 / 0%);
+  --glass-shade: oklch(0 0 0 / 60%);
+  --glass-contact: oklch(0 0 0 / 10%);
+  --glass-lift: oklch(0 0 0 / 22%);
+  --glass-control: oklch(1 0 0 / 7%);
+  --glass-control-rim: oklch(1 0 0 / 11%);
+  --glass-state: var(--glass-control);
+  --glass-state-rim: var(--glass-control-rim);
+  --glass-state-edge: var(--glass-edge);
+  --glass-state-armed: var(--glass-control-rim);
+  --hover: oklch(1 0 0 / 8%);
+  --hover-faint: oklch(1 0 0 / 4%);
+  --primary-solid: 86%;
+  --primary-rim: oklch(1 0 0);
+  --primary-under: oklch(0 0 0 / 22%);
+  --primary-inner: oklch(0 0 0 / 7%);
+  --primary-edge: oklch(1 0 0 / 26%);
+  --field: oklch(1 0 0 / 6%);
+  --field-rim: oklch(1 0 0 / 15%);
+  --field-edge: oklch(1 0 0 / 8%);
+  --well-shade: oklch(0 0 0 / 38%);
+  --well-rim: oklch(1 0 0 / 9%);
+  --focus-line: oklch(1 0 0 / 40%);
+  --knob: oklch(0.97 0 0);
+  --knob-shade: oklch(0 0 0 / 55%);
+  --mark-solid: 68%;
+  --mark-rim: oklch(1 0 0);
+  --mark-edge: oklch(1 0 0 / 22%);
+  --mark-line: oklch(1 0 0 / 46%);
+  /* Neutral grey, like the page: no tint of its own, and it blurs what is
+     behind it without boosting its colour. A pane that leans blue beside a
+     grey one reads as a second palette. */
+  --glass-blur: blur(26px);
+
+  --light-1: transparent;
+  --light-2: transparent;
+  --light-3: transparent;
+
+  --brand: oklch(0.78 0.13 166);
+  --brand-foreground: oklch(0.2 0.03 166);
+  --brand-muted: oklch(0.78 0.13 166 / 15%);
+
+  --status-running: oklch(0.72 0 0);
+  --status-done: oklch(0.68 0.15 250);
+  --success: oklch(0.74 0.16 152);
+  --status-interrupted: oklch(0.77 0.15 62);
+
+  --link: oklch(0.76 0.12 250);
+  --code-inline: oklch(0.73 0.13 20);
+  --syn-keyword: oklch(0.78 0.1 250);
+  --syn-string: oklch(0.8 0.11 160);
+  --syn-number: oklch(0.8 0.12 80);
+  --syn-name: oklch(0.78 0.11 305);
+
+  --chart-1: oklch(0.94 0 0);
+  --chart-2: oklch(0.83 0 0);
+  --chart-3: oklch(0.69 0 0);
+  --chart-4: oklch(0.56 0 0);
+  --chart-5: oklch(0.44 0 0);
+
+  --sidebar: oklch(0.11 0 0 / 50%);
+  --sidebar-foreground: oklch(0.9 0 0);
+  --sidebar-primary: oklch(0.95 0 0);
+  --sidebar-primary-foreground: oklch(0.18 0 0);
+  --sidebar-accent: oklch(1 0 0 / 8%);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.48 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    background-image:
+      radial-gradient(62rem 42rem at 12% -6rem, var(--light-1), transparent 62%),
+      radial-gradient(52rem 38rem at 92% 4rem, var(--light-2), transparent 60%),
+      radial-gradient(64rem 46rem at 55% 110%, var(--light-3), transparent 62%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+}
+
+/* ---- The material ---------------------------------------------------------
+
+   Whatever is painted in a glass colour is glass. The rules are on the colour
+   utilities themselves, so a component gets the material by using the token
+   it already used. They are outside any layer on purpose: a layered utility
+   must not be able to switch the blur or the rim off. */
+
+.bg-card,
+.bg-popover,
+.bg-sidebar,
+.glass-panel {
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* Thinnest: the panels a page is laid out in. A shade off the page, so a
+   column of them does not outshine what is being read. */
+.glass-panel {
+  background-color: var(--panel);
+}
+
+/* A pane: the rim on top, the hairline all round, the shadow below.
+
+   A pane gives up whatever border it was given. Its lines are drawn inside
+   its edge and its hairline outside, and a border between the two — even a
+   see-through one — shows as a second ring round the pane. */
+.glass-panel,
+.bg-card {
+  border-width: 0;
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    inset 0 0 0 1px var(--glass-inner),
+    0 0 0 1px var(--glass-edge),
+    0 1px 2px var(--glass-contact),
+    0 12px 32px -14px var(--glass-shade);
+}
+
+/* Thickest: menus, popovers and dialogs, lifted further off the page. */
+.bg-popover {
+  border-width: 0;
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    inset 0 -1px 0 var(--popover-under),
+    0 0 0 1px var(--popover-edge),
+    0 24px 60px -18px var(--glass-shade),
+    0 6px 16px -6px var(--glass-lift);
+}
+
+/* A sidebar is a pane standing on its edge: lit along the side that faces
+   the page. */
+[data-slot="sidebar-inner"] {
+  box-shadow:
+    inset -1px 0 0 var(--glass-edge),
+    inset 0 1px 0 var(--glass-inner);
+}
+
+/* Small things made of clear glass: a message bubble, a glass button. */
+.glass-control {
+  -webkit-backdrop-filter: var(--glass-blur-control);
+  backdrop-filter: var(--glass-blur-control);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    0 0 0 1px var(--glass-edge),
+    0 1px 2px var(--glass-contact);
+}
+
+/* The button that asks to be pressed is glass too, and the most solid there
+   is: a pane the colour of the ink, with nothing showing through. What makes
+   it glass is the same as everywhere else, at its edges — the line of light
+   along the top, a line of shade along the bottom where the pane turns away,
+   a hairline round it, and the shadow it stands on. The face stays flat,
+   and lets through just enough of what is behind it for the line of light to
+   stand brighter than the pane.
+
+   The hairline is the button's own border: shadcn's button keeps a
+   transparent one and stops its fill short of it, so a ring drawn outside
+   would stand off the fill with the page showing between.
+
+   Anything pressed that is painted in the primary colour gets it, so a stock
+   button needs no change; a badge that happens to be a link does not. */
+:is(button, a, [role="button"]).bg-primary:not([data-slot="badge"]),
+.glass-primary {
+  background-color: color-mix(in oklch, var(--primary) var(--primary-solid), transparent);
+  -webkit-backdrop-filter: var(--glass-blur-control);
+  backdrop-filter: var(--glass-blur-control);
+  /* The last is Tailwind's ring, so a focus ring is still drawn. */
+  box-shadow:
+    inset 0 1px 0 var(--primary-rim),
+    inset 0 -1px 0 var(--primary-under),
+    inset 0 0 0 1px var(--primary-inner),
+    0 1px 2px var(--glass-contact),
+    0 8px 18px -9px var(--glass-shade),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+/* Under the pointer the pane thins a little; it does not change colour. */
+:is(button, a, [role="button"]).bg-primary:not([data-slot="badge"]):hover,
+.glass-primary:hover {
+  background-color: color-mix(in oklch, var(--primary) calc(var(--primary-solid) - 10%), transparent);
+}
+:is(button, a, [role="button"]).bg-primary:not([data-slot="badge"]):not(:focus-visible),
+.glass-primary:not(:focus-visible) {
+  /* The hairline is the ink's own colour, toned toward the edge's: a grey
+     one round ink of a colour would read as an outline drawn round it. Mixed
+     in oklab, which has no hue to turn: in oklch the grey's hue of 0 is
+     travelled toward, and green comes out brown. */
+  border-color: color-mix(in oklab, var(--primary) 55%, var(--primary-edge));
+}
+/* Pressed, it sits down on the page: the shadow under it goes. */
+:is(button, a, [role="button"]).bg-primary:not([data-slot="badge"]):active,
+.glass-primary:active {
+  box-shadow:
+    inset 0 1px 0 var(--primary-rim),
+    inset 0 -1px 0 var(--primary-under),
+    inset 0 0 0 1px var(--primary-inner),
+    0 1px 1px var(--glass-contact),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+
+/* Smaller things filled with the ink are the same solid pane, without the
+   shadow a button stands on, and with a fainter shade along the bottom: on
+   something twenty pixels high a full one reads as a bevel. The filled part
+   of a progress bar or a slider, a switch that is on, a box that is ticked.
+
+   A badge loses the border it reserves. The lines of light and shade are drawn
+   inside the border, and with one in the way they sit a pixel in from the
+   edge, which shows as a second edge. */
+[data-slot="badge"][data-variant="default"],
+[data-slot="progress-indicator"],
+[data-slot="slider-range"] {
+  border-width: 0;
+  background-color: color-mix(in oklch, var(--primary) var(--primary-solid), transparent);
+  box-shadow:
+    inset 0 1px 0 var(--primary-rim),
+    inset 0 -1px 0 color-mix(in oklch, var(--primary-under) 45%, transparent),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+/* A box to tick that was drawn by hand — a square that turns the colour of ink
+   when its row is chosen, as in a list of calendars — is a checkbox, and is
+   finished as one: the same corners, and (below) the same pane or groove. */
+[class*="data-[active=true]:bg-sidebar-primary"] {
+  border-radius: 4px;
+}
+
+/* A switch, a box and a radio have to keep their border — what is inside them
+   is placed by it, and without it a switch's knob sits off centre — so on
+   these the two lines are the border itself: its top the colour of the light,
+   its bottom the colour of the shade, over the pane's own fill. */
+[data-slot="switch"][data-checked],
+[data-slot="checkbox"][data-checked],
+[data-slot="radio-group-item"][data-checked],
+[data-slot="questionnaire-choice"][data-checked] [data-slot="questionnaire-choice-indicator"],
+[class*="data-[active=true]:bg-sidebar-primary"][data-active="true"] {
+  border-color: transparent;
+  border-top-color: var(--primary-rim);
+  border-bottom-color: color-mix(in oklch, var(--primary-under) 45%, transparent);
+  background-color: color-mix(in oklch, var(--primary) var(--primary-solid), transparent);
+  background-clip: border-box;
+}
+
+/* A badge is a small pane, and each kind is its own glass: the ink's solid
+   pane above, and here clear glass (secondary), an empty frame of it
+   (outline), and glass tinted the colour of failure. None keeps the border
+   it reserved, for the reason above. */
+[data-slot="badge"] {
+  border-width: 0;
+}
+[data-slot="badge"][data-variant="secondary"] {
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    inset 0 0 0 1px var(--glass-edge);
+}
+[data-slot="badge"][data-variant="outline"] {
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    inset 0 0 0 1px var(--border);
+}
+[data-slot="badge"][data-variant="destructive"] {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, var(--destructive) 28%, transparent),
+    inset 0 0 0 1px color-mix(in oklch, var(--destructive) 16%, transparent);
+}
+
+/* ---- Every other pane -------------------------------------------------------
+
+   Nothing in Solid Glass is a flat fill. What follows goes through the rest of
+   what shadcn/ui paints with one — by the names its parts already carry — and
+   gives each the edge of the glass it is. */
+
+/* shadcn/ui rounds a control with `rounded-lg`, the full radius. At this
+   theme's radius that turns a button or a field 32 pixels high into a pill,
+   so a control that asks for it gets the control's radius instead — by
+   turning the variable down on that element, which leaves every corner
+   utility (a group's squared inner corners, a size's own radius, a
+   `rounded-full` passed in) working as written. */
+:is(
+  :is([data-slot="button"], .group\/button), [data-slot="input"], [data-slot="questionnaire-input"], [data-slot="textarea"], [data-slot="select-trigger"],
+  [data-slot="native-select"], [data-slot="input-group"], [data-slot="combobox-chips"],
+  [data-slot="toggle"], [data-slot="toggle-group"], [data-slot="toggle-group-item"],
+  [data-slot="button-group-text"], [data-slot="input-otp-group"]
+).rounded-lg,
+[data-slot="button-group"] {
+  --radius: var(--radius-control);
+}
+
+/* A bare box — a border, a radius and nothing in it, the frame shadcn/ui's
+   examples and most people's own markup put round a row or a list — is the
+   thinnest pane: the panel's fill, a hairline, a faint line of light on top.
+   Anything that names a fill of its own (`bg-…`), a dashed outline, or a part
+   with a `data-slot` is left to say what it is. */
+:is(div, li, section):not([data-slot]).border[class*="rounded-"]:not([class*="bg-"]):not(.border-dashed),
+[data-slot="scroll-area"].border:not([class*="bg-"]),
+[data-slot="accordion"].border:not([class*="bg-"]),
+[data-slot="resizable-panel-group"].border:not([class*="bg-"]),
+[data-slot="calendar"].border {
+  border-color: var(--glass-edge);
+  background-color: var(--panel);
+  background-clip: padding-box;
+  box-shadow: inset 0 1px 0 var(--glass-inner);
+}
+
+/* A box with a quiet fill and nothing else — the placeholder a layout is
+   sketched with, a well for a picture — is a pane too, the thinnest: its fill
+   stays as written and it gains the hairline and the faint line of light. */
+:is(div, li, section):not([data-slot]):is(.bg-muted, .bg-muted\/50)[class*="rounded-"],
+:is([data-slot="aspect-ratio"], [data-slot="attachment-media"], [data-slot="avatar-fallback"], [data-slot="avatar-group-count"]).bg-muted {
+  box-shadow:
+    inset 0 1px 0 var(--glass-inner),
+    inset 0 0 0 1px var(--glass-edge);
+}
+
+/* A small tile of ink — the square a logo sits on, in a sidebar's header or
+   above a form — is the primary button's pane at the size of an icon: lit
+   along the top, shaded along the bottom. Its corners are a share of its
+   size, so a tile of 24 pixels is not rounded off into a dot. */
+.bg-sidebar-primary,
+:is(div, span):not([data-slot]).bg-primary[class*="size-"] {
+  border-radius: 28%;
+  box-shadow:
+    inset 0 1px 0 var(--primary-rim),
+    inset 0 -1px 0 var(--primary-under),
+    0 1px 2px var(--glass-contact);
+}
+
+/* The words in the middle of a rule ("or continue with") are set on a patch
+   of the page's colour, to hide the rule behind them. A pane is see-through
+   and lies on who knows what, so no patch can match it. Here the words have no
+   patch: the rule is two rules instead, one to each side of them. */
+[data-slot="field-separator"]:has(> [data-slot="field-separator-content"]) {
+  overflow: hidden;
+}
+[data-slot="field-separator"]:has(> [data-slot="field-separator-content"]) > [data-slot="separator"] {
+  display: none;
+}
+[data-slot="field-separator-content"] {
+  background-color: transparent;
+}
+[data-slot="field-separator-content"]::before,
+[data-slot="field-separator-content"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 100vw;
+  height: 1px;
+  background-color: var(--border);
+}
+[data-slot="field-separator-content"]::before {
+  right: 100%;
+}
+[data-slot="field-separator-content"]::after {
+  left: 100%;
+}
+
+/* A button is known by `group/button`, the class every one carries, as well
+   as by its `data-slot`: a trigger that renders as a button (a dialog's, a
+   menu's, a tooltip's) puts its own name in `data-slot`, and a rule that
+   asked only for "button" would walk past it. */
+
+/* Buttons that do not ask to be pressed are clear glass. Outline keeps its
+   border — a group of buttons joins them by it — so the border is the
+   hairline, one colour all the way round, and the line of light is drawn just
+   inside it. (Lighting the border's own top side breaks at the corners, where
+   a white top meets a grey side.) Secondary is drawn the same way in a
+   fainter hairline: its border is see-through and its fill stops short of it,
+   so a line drawn inside left the page showing round it as a second edge. */
+:is([data-slot="button"], .group\/button):is([data-variant="outline"], .bg-background),
+:is([data-slot="button"], .group\/button):is([data-variant="secondary"], .bg-secondary) {
+  background-color: var(--glass-control);
+  -webkit-backdrop-filter: var(--glass-blur-control);
+  backdrop-filter: var(--glass-blur-control);
+}
+:is([data-slot="button"], .group\/button):is([data-variant="outline"], .bg-background) {
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    0 1px 2px var(--glass-contact),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+:is([data-slot="button"], .group\/button):is([data-variant="outline"], .bg-background):not(:focus-visible):not([aria-invalid="true"]) {
+  border-color: var(--border);
+}
+:is([data-slot="button"], .group\/button):is([data-variant="secondary"], .bg-secondary) {
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    0 1px 2px var(--glass-contact),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+:is([data-slot="button"], .group\/button):is([data-variant="secondary"], .bg-secondary):not(:focus-visible):not([aria-invalid="true"]) {
+  border-color: var(--glass-edge);
+}
+:is([data-slot="button"], .group\/button):is([data-variant="outline"], [data-variant="secondary"], .bg-background, .bg-secondary):is(:hover, [aria-expanded="true"], [data-popup-open], [data-pressed]) {
+  background-color: color-mix(in oklch, var(--foreground) 12%, transparent);
+}
+/* Glass tinted the colour of failure. A button's hairline is its border, as
+   above; a bubble has none, and draws it inside. */
+:is([data-slot="button"], .group\/button):is([data-variant="destructive"], .bg-destructive\/10) {
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, var(--destructive) 30%, transparent),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+:is([data-slot="button"], .group\/button):is([data-variant="destructive"], .bg-destructive\/10):not(:focus-visible) {
+  border-color: color-mix(in oklch, var(--destructive) 16%, transparent);
+}
+[data-slot="bubble"][data-variant="destructive"] > [data-slot="bubble-content"] {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, var(--destructive) 30%, transparent),
+    inset 0 0 0 1px color-mix(in oklch, var(--destructive) 16%, transparent),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+
+/* What is said in a conversation sits in a small pane of clear glass, as in
+   the product this material comes from. The default bubble is that pane, not
+   a block of ink: a column of bright blocks down a dark page is the loudest
+   thing on it. The quieter kinds are thinner glass. */
+[data-slot="bubble-content"] {
+  border-width: 0;
+}
+[data-slot="bubble"]:not([data-variant="ghost"]):not([data-variant="destructive"]) > [data-slot="bubble-content"] {
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    inset 0 0 0 1px var(--glass-edge),
+    0 1px 2px var(--glass-contact),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+[data-slot="bubble"][data-variant="default"] > [data-slot="bubble-content"] {
+  background-color: var(--secondary);
+  color: var(--foreground);
+  -webkit-backdrop-filter: var(--glass-blur-control);
+  backdrop-filter: var(--glass-blur-control);
+}
+[data-slot="bubble"][data-variant="default"] > [data-slot="bubble-content"]:is(button, a):hover {
+  background-color: color-mix(in oklch, var(--foreground) 14%, transparent);
+}
+[data-slot="bubble"]:is([data-variant="muted"], [data-variant="outline"]) > [data-slot="bubble-content"] {
+  background-color: var(--panel);
+}
+/* What people answered a message with floats on its corner: a small pane of
+   the thickest glass, with its own edge. shadcn/ui cuts it out of the bubble
+   with a ring in the card's colour, which on glass is a dark notch. */
+[data-slot="bubble-reactions"] {
+  background-color: var(--popover);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    0 0 0 1px var(--glass-edge),
+    0 3px 8px -3px var(--glass-lift);
+}
+
+/* Small blocks that only hold something — a key, initials, a chip, an
+   attachment — are clear glass: the line of light and the hairline, inside
+   their own edge. */
+[data-slot="kbd"],
+[data-slot="combobox-chip"],
+[data-slot="attachment"],
+[data-slot="button-group-text"],
+[data-slot="questionnaire-choice-shortcut"],
+[data-slot="alert-dialog-media"] {
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    inset 0 0 0 1px var(--glass-edge);
+}
+
+/* A bar of menus is one pane of clear glass, with a control's corners. */
+[data-slot="menubar"] {
+  border-width: 0;
+  border-radius: var(--radius-md);
+  background-color: var(--glass-control);
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    inset 0 0 0 1px var(--glass-edge),
+    0 1px 2px var(--glass-contact);
+}
+
+/* An item with a frame round it is the thinnest pane; the block that holds an
+   empty state's icon is clear glass like any other small block. */
+[data-slot="item"]:is([data-variant="outline"], [data-variant="muted"]) {
+  border-color: var(--glass-edge);
+  background-color: var(--panel);
+  background-clip: padding-box;
+  box-shadow: inset 0 1px 0 var(--glass-inner);
+}
+[data-slot="empty-icon"][data-variant="icon"],
+[data-slot="empty-media"][data-variant="icon"] {
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    inset 0 0 0 1px var(--glass-edge);
+}
+
+/* A choice drawn as a card — a radio or a switch with its label and a line
+   under it, one answer of several — is the thinnest pane, and the one that is
+   chosen wears the clear glass every chosen thing wears. */
+[data-slot="field-label"]:has(> [data-slot="field"]),
+[data-slot="questionnaire-choice"] {
+  border-color: var(--glass-edge);
+  background-color: var(--panel);
+  background-clip: padding-box;
+  box-shadow: inset 0 1px 0 var(--glass-inner);
+}
+[data-slot="field-label"]:has(> [data-slot="field"]):has([data-checked]),
+[data-slot="questionnaire-choice"]:is([data-checked], :has([data-checked])) {
+  border-color: var(--glass-state-edge);
+  background-color: var(--glass-state);
+  box-shadow: inset 0 1px 0 var(--glass-state-rim);
+}
+
+/* A toggle with a frame is clear glass, like an outline button. */
+[data-slot="toggle"].border-input,
+:is([data-slot="toggle"], [data-slot="toggle-group-item"])[data-variant="outline"] {
+  background-color: var(--glass-control);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+[data-slot="toggle"].border-input:is([data-pressed], [aria-pressed="true"]),
+:is([data-slot="toggle"], [data-slot="toggle-group-item"])[data-variant="outline"]:is([data-pressed], [aria-pressed="true"]) {
+  background-color: color-mix(in oklch, var(--foreground) 14%, transparent);
+}
+
+/* A row of tabs is a tray, and the tab that is open a pane lying in it. Every
+   tab keeps its border, open or not, so none changes size: on the open one
+   the border is the hairline and the line of light lies just inside it. */
+[data-slot="tabs-list"][data-variant="default"] {
+  box-shadow:
+    inset 0 1px 2px var(--well-shade),
+    inset 0 -1px 0 var(--well-rim);
+}
+[data-slot="tabs-list"][data-variant="default"] [data-slot="tabs-trigger"][data-active]:not([data-active="false"]) {
+  border-color: var(--glass-edge);
+  background-color: var(--glass-control);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    0 1px 2px var(--glass-contact),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+
+/* A hint floats like any other popover, so it is the same thick glass, only
+   smaller: not a block of ink. It has no tail; a pane of glass has none. */
+[data-slot="tooltip-content"] {
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    0 0 0 1px var(--glass-edge),
+    0 10px 24px -10px var(--glass-shade),
+    0 3px 8px -3px var(--glass-lift);
+}
+[data-slot="tooltip-content"] > .bg-foreground {
+  display: none;
+}
+
+/* A day that is picked in a calendar is the ink's solid pane, and stays one
+   under the pointer and under the keyboard. (shadcn/ui's ghost button, which
+   a day is, turns grey on hover and takes its text colour back; on a picked
+   day that left white text on a dark square with a line of light across it.) */
+[data-slot="calendar"] :is([data-selected-single="true"], [data-range-start="true"], [data-range-end="true"]) {
+  background-color: color-mix(in oklch, var(--primary) var(--primary-solid), transparent);
+  color: var(--primary-foreground);
+  box-shadow:
+    inset 0 1px 0 var(--primary-rim),
+    inset 0 -1px 0 color-mix(in oklch, var(--primary-under) 45%, transparent),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+/* The days between the two ends of a range, and today, are clear glass. */
+[data-slot="calendar"] [data-range-middle="true"],
+[data-slot="calendar"] [data-today="true"] > :is(button, [data-slot="button"]):not([data-selected-single="true"]):not([data-range-start="true"]):not([data-range-end="true"]) {
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    inset 0 0 0 1px var(--glass-edge),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+
+/* Where the keyboard is. shadcn/ui draws a ring three pixels wide in a grey
+   at half strength; on this page that is a thick smudge round the thing. Here
+   it is a crisp line two pixels wide, standing a pixel off what it is round
+   so it reads on a light pane and a dark one alike. It goes only where
+   shadcn/ui draws its ring: a part that asks for none, like the box inside an
+   input group, still gets none. Fields draw their own (see Fields). */
+:is([class*="focus-visible:ring-3"], [class*="focus-visible:ring-[3px]"]):focus-visible:not([data-slot="input"]):not([data-slot="textarea"]):not([data-slot="select-trigger"]):not([data-slot="native-select"]):not([data-slot="sidebar-input"]):not([aria-invalid="true"]),
+[data-slot="calendar"] [data-focused="true"] > :is(button, [data-slot="button"]) {
+  --tw-ring-shadow: 0 0 0 1px var(--background), 0 0 0 3px var(--focus-line);
+}
+
+/* Some of shadcn/ui's menus are painted in a see-through popover colour.
+   Here what floats is the thickest glass, whichever component it belongs to. */
+[data-slot="select-content"],
+[data-slot="combobox-content"],
+[data-slot="context-menu-content"],
+[data-slot="context-menu-sub-content"],
+[data-slot="menubar-content"],
+[data-slot="menubar-sub-content"] {
+  border-color: transparent;
+  background-color: var(--popover);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    inset 0 -1px 0 var(--popover-under),
+    0 0 0 1px var(--popover-edge),
+    0 24px 60px -18px var(--glass-shade),
+    0 6px 16px -6px var(--glass-lift);
+}
+/* shadcn/ui's see-through menus lay a second sheet under themselves that
+   blurs and brightens whatever is behind: a glow through the pane, which is
+   liquid glass's trick, not this material's. The pane's own fill is enough. */
+:is(
+  [data-slot="select-content"], [data-slot="combobox-content"], [data-slot="dropdown-menu-content"],
+  [data-slot="dropdown-menu-sub-content"], [data-slot="context-menu-content"], [data-slot="context-menu-sub-content"],
+  [data-slot="menubar-content"], [data-slot="menubar-sub-content"]
+)::before {
+  content: none;
+}
+
+/* A knob: the thumb of a switch or a slider. The brightest pane, lit on top,
+   with a short shadow because it stands just proud of its track. */
+[data-slot="switch-thumb"],
+[data-slot="slider-thumb"] {
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 90%),
+    inset 0 -1px 0 oklch(0 0 0 / 14%),
+    0 1px 2px var(--knob-shade),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+
+/* ---- Fields --------------------------------------------------------------
+
+   A field is a pane of clear glass to type on, drawn exactly as a glass button
+   is: a faint fill, a line of light inside its top edge, a hairline inside the
+   rest. Both lines are shadows, so they run round the corners in one piece.
+   (A border with a brighter top side was tried first: the two colours meet
+   at each corner with a visible break, and the whole reads as a box drawn in
+   outline, not as glass.)
+
+   The hairline is the border it was given, one colour all the way round, so
+   it sits on the field's outer edge: drawn inside a border left see-through,
+   it showed the page as a second ring round the field. The border is also
+   where the brighter line appears while the field is being typed into. */
+
+[data-slot="input"],
+[data-slot="questionnaire-input"],
+[data-slot="textarea"],
+[data-slot="select-trigger"],
+[data-slot="native-select"],
+[data-slot="input-group"],
+[data-slot="combobox-chips"],
+[data-slot="sidebar-input"] {
+  background-color: var(--field);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--field-rim),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+:is([data-slot="input"], [data-slot="questionnaire-input"], [data-slot="textarea"], [data-slot="select-trigger"], [data-slot="native-select"], [data-slot="input-group"], [data-slot="combobox-chips"], [data-slot="sidebar-input"]):not([aria-invalid="true"]) {
+  border-color: var(--field-edge);
+}
+/* The cells of a one-time code share their borders, so on them the border is
+   the hairline, one colour all round. */
+[data-slot="input-otp-slot"] {
+  border-color: var(--field-edge);
+  background-color: var(--field);
+}
+
+/* A field being typed into is drawn in a brighter line, and that is all.
+   shadcn/ui's ring three pixels wide round it is too much light for a page
+   this dark, and on one cell of a row of cells it is a frame round a frame. */
+:is([data-slot="input"], [data-slot="questionnaire-input"], [data-slot="textarea"], [data-slot="select-trigger"], [data-slot="native-select"], [data-slot="sidebar-input"]):focus-visible:not([aria-invalid="true"]),
+[data-slot="input-group"]:has([data-slot="input-group-control"]:focus-visible):not(:has([aria-invalid="true"])),
+[data-slot="combobox-chips"]:focus-within {
+  --tw-ring-shadow: 0 0 #0000;
+  border-color: var(--focus-line);
+}
+/* The cell of a one-time code that the next digit goes in: lit, with its own
+   line drawn inside it, so it does not spill over the cells beside it. */
+[data-slot="input-otp-slot"][data-active="true"] {
+  background-color: color-mix(in oklch, var(--foreground) 14%, transparent);
+  box-shadow: inset 0 0 0 1px var(--focus-line);
+}
+
+/* ---- Grooves --------------------------------------------------------------
+
+   The track a knob runs in, and a box not yet ticked, are cut into the
+   surface, so the light falls the other way: a shade under the upper lip, a
+   line of light along the lower one. */
+
+
+[data-slot="progress-track"],
+[data-slot="slider-track"],
+[data-slot="switch"]:not([data-checked]),
+[data-slot="checkbox"]:not([data-checked]),
+[data-slot="radio-group-item"]:not([data-checked]),
+[data-slot="questionnaire-choice"]:not([data-checked]) [data-slot="questionnaire-choice-indicator"],
+[class*="data-[active=true]:bg-sidebar-primary"]:not([data-active="true"]) {
+  box-shadow:
+    inset 0 1px 1.5px var(--well-shade),
+    inset 0 -1px 0 var(--well-rim),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+
+/* The line between two panels that can be resized lights up under the pointer,
+   and fully while it is being dragged: the one moment its position matters. */
+[data-slot="resizable-handle"] {
+  transition:
+    background-color 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+[data-slot="resizable-handle"] > div {
+  transition: background-color 150ms ease-out;
+}
+[data-slot="resizable-handle"][data-separator="hover"] {
+  background-color: color-mix(in oklch, var(--foreground) 40%, transparent);
+}
+[data-slot="resizable-handle"][data-separator="hover"] > div {
+  background-color: color-mix(in oklch, var(--foreground) 55%, transparent);
+}
+[data-slot="resizable-handle"][data-separator="active"] {
+  background-color: var(--foreground);
+  box-shadow: 0 0 10px 0 color-mix(in oklch, var(--foreground) 45%, transparent);
+}
+[data-slot="resizable-handle"][data-separator="active"] > div {
+  background-color: var(--foreground);
+}
+
+/* ---- Charts ---------------------------------------------------------------
+
+   A bar is a pane of glass standing on its edge: the series' own colour let
+   through a little, a hairline round it, and the line of light along its top.
+   An SVG shape has no inset shadow to draw that line with, so it is the bar's
+   own shape drawn again one pixel higher, behind it.
+
+   The bar itself is kept whole and the whole of it, line and all, is then let
+   through together. Thinning the fill instead put the white copy behind a
+   see-through face: it showed through all of it, and the bar came out a flat
+   pale block with no line to be seen. (A filter that drew the line inside the
+   bar was tried too: the bars vanished whenever an ancestor was zoomed, so
+   this stays with what every browser draws the same.) */
+
+[data-slot="chart"] :is(.recharts-bar-rectangle .recharts-rectangle, .recharts-pie-sector .recharts-sector, .recharts-radial-bar-sector) {
+  stroke: var(--mark-line);
+  stroke-width: 1px;
+  filter: drop-shadow(0 -1px 0 var(--mark-rim));
+  opacity: var(--mark-solid);
+}
+/* The same mark made of a box rather than drawn in a chart: a bar in a row of
+   them, a meter, anything filled with one of the chart's colours. It is the
+   same pane on its edge, so it gets the same three things, and here an inset
+   shadow can draw the line of light where it belongs. */
+.bg-chart-1 { --mark: var(--chart-1); }
+.bg-chart-2 { --mark: var(--chart-2); }
+.bg-chart-3 { --mark: var(--chart-3); }
+.bg-chart-4 { --mark: var(--chart-4); }
+.bg-chart-5 { --mark: var(--chart-5); }
+:is(.bg-chart-1, .bg-chart-2, .bg-chart-3, .bg-chart-4, .bg-chart-5) {
+  background-color: color-mix(in oklch, var(--mark) var(--mark-solid), transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, var(--mark-rim) 55%, transparent),
+    inset 0 0 0 1px var(--mark-edge);
+}
+/* A badge in a chart's colour has words on it, so its fill stays nearly
+   whole. It is a label, not a control, and is finished as the other badges
+   are: lit along the top, a faint shade along the bottom and a faint dark
+   hairline round it (a light fill has no use for a light one). It stands on
+   nothing: with the primary button's full bevel and a shadow under it, it
+   read as a button to press. */
+[data-slot="badge"]:is(.bg-chart-1, .bg-chart-2, .bg-chart-3, .bg-chart-4, .bg-chart-5) {
+  background-color: color-mix(in oklch, var(--mark) 90%, transparent);
+  -webkit-backdrop-filter: var(--glass-blur-control);
+  backdrop-filter: var(--glass-blur-control);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 55%),
+    inset 0 -1px 0 oklch(0 0 0 / 10%),
+    inset 0 0 0 1px oklch(0 0 0 / 8%);
+}
+
+/* A tick in a disc of ink — the mark beside each line of a list of what is
+   included — is a checked box made round: the pane is the icon's own box,
+   rounded off, with the box's line of light, its shade along the bottom and a
+   hairline of the ink's own colour. The disc and the ring the icon draws are
+   put out, so the tick sits on the pane. */
+svg.fill-primary:has(> circle) {
+  border-radius: 9999px;
+  background-color: color-mix(in oklch, var(--primary) var(--primary-solid), transparent);
+  box-shadow:
+    inset 0 1px 0 var(--primary-rim),
+    inset 0 -1px 0 color-mix(in oklch, var(--primary-under) 45%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--primary) 55%, var(--primary-edge)),
+    0 1px 2px var(--glass-contact);
+}
+svg.fill-primary:has(> circle) > circle {
+  fill: none;
+  stroke: none;
+}
+
+/* What a chart says under the pointer floats over it: the thickest glass, like
+   any other popover, and with a control's corners rather than a pill's. */
+.recharts-tooltip-wrapper > .bg-background {
+  /* No border: the hairline is outside the edge and the shade inside it, and
+     a see-through border between them doubled the line along the foot. */
+  border-width: 0;
+  border-radius: var(--radius-md);
+  background-color: var(--popover);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    inset 0 -1px 0 var(--popover-under),
+    0 0 0 1px var(--popover-edge),
+    0 24px 60px -18px var(--glass-shade),
+    0 6px 16px -6px var(--glass-lift);
+}
+
+/* The one state. What is chosen, held open, or under the pointer in a menu
+   is a small pane of clear glass rather than a flat grey fill: a faint tint,
+   a line of light along the top and a hairline round it. Nothing more — no
+   gradient and no shadow, or a row in a list starts to look like a raised
+   button. One look for all three, so "this one" reads the same in a sidebar,
+   in a menu and on a tab.
+
+   In a menu it is the row that wears it, and only the row: a checked row's
+   tick is marked highlighted along with it, and would otherwise get a pane of
+   its own inside the row's. */
+[data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]),
+[data-slot="sidebar-menu-button"][aria-expanded="true"],
+[data-slot="sidebar-menu-sub-button"][data-active]:not([data-active="false"]),
+[role="menu"] [role^="menuitem"][data-highlighted],
+[role="option"][data-highlighted],
+[data-slot="command-item"][data-selected="true"],
+[data-slot="toggle"]:is([data-pressed], [aria-pressed="true"]),
+[data-slot="toggle-group-item"]:is([data-pressed], [aria-pressed="true"]),
+[data-slot="menubar-trigger"]:is([aria-expanded="true"], [data-popup-open]),
+[data-slot="navigation-menu-trigger"][data-popup-open],
+.glass-held[data-popup-open],
+.glass-held[aria-expanded="true"],
+.glass-chosen {
+  background-color: var(--glass-state);
+  box-shadow:
+    inset 0 1px 0 var(--glass-state-rim),
+    0 0 0 1px var(--glass-state-edge);
+}
+
+/* Where the thing in that state keeps a border of its own (a button does, and a
+   toggle: one pixel, clear, with the fill stopping inside it), the edge drawn
+   round the outside stood a pixel off the fill and read as a second outline.
+   There the border is the edge, and nothing is drawn outside it. */
+:is(
+    [data-slot="toggle"]:is([data-pressed], [aria-pressed="true"]),
+    [data-slot="toggle-group-item"]:is([data-pressed], [aria-pressed="true"]),
+    [data-slot="menubar-trigger"]:is([aria-expanded="true"], [data-popup-open]),
+    [data-slot="navigation-menu-trigger"][data-popup-open],
+    .glass-held[data-popup-open],
+    .glass-held[aria-expanded="true"],
+    .glass-chosen
+  ).border:not(.border-0):not(:focus-visible):not([aria-invalid="true"]) {
+  border-color: var(--glass-state-edge);
+  box-shadow: inset 0 1px 0 var(--glass-state-rim);
+}
+
+/* Under the pointer, where shadcn/ui paints a hover with its quiet greys: the
+   theme's own step, strong enough to see on a white pane as on a dark one. */
+/* Held open is the same step, pointer or not. (:where keeps these as weak as
+   the utilities they stand in for, so anything the theme says about a
+   particular part — a picked day in a calendar — still wins.) */
+:where(.aria-expanded\:bg-muted)[aria-expanded="true"],
+:where(.data-open\:bg-accent, .data-popup-open\:bg-accent):is([data-open]:not([data-open="false"]), [data-popup-open], [data-state="open"]) {
+  background-color: var(--hover);
+}
+@media (hover: hover) {
+  :where(.hover\:bg-muted, .hover\:bg-accent):hover {
+    background-color: var(--hover);
+  }
+  :where(.hover\:bg-muted\/50, .hover\:bg-accent\/50):hover {
+    background-color: var(--hover-faint);
+  }
+}
+
+/* The same pane lit a step brighter: a tag that Backspace has picked out and
+   will remove on the next press. A second coat of its own fill, the brighter
+   rim, and its hairline drawn in the rim's colour. */
+.glass-chosen.glass-armed {
+  background-image: linear-gradient(var(--glass-state), var(--glass-state));
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    0 0 0 1px var(--glass-state-armed);
+}
+
+/* Without the blur, for a reader whose system asks for less transparency or a
+   part of the page marked data-glass="opaque". The panes turn opaque and keep
+   their rim and shadow, which is most of what they were. */
+[data-glass="opaque"] :is(.bg-card, .bg-popover, .bg-sidebar, .glass-panel, .glass-control),
+[data-glass="opaque"]:is(.bg-card, .bg-popover, .bg-sidebar, .glass-panel, .glass-control) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --primary-solid: 100%;
+  }
+  .bg-card,
+  .bg-popover,
+  .bg-sidebar,
+  .glass-panel,
+  .glass-control {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  :root {
+    --panel: oklch(0.947 0.006 265);
+    --card: oklch(0.958 0.005 265);
+    --popover: oklch(0.98 0.003 265);
+    --sidebar: oklch(0.985 0 0);
+  }
+  .dark {
+    --panel: oklch(0.19 0 0);
+    --card: oklch(0.225 0 0);
+    --popover: oklch(0.22 0 0);
+    --sidebar: oklch(0.13 0 0);
+  }
+}
+
+/* ---- Motion ---------------------------------------------------------------
+
+   Motion means something is running. Nothing moves to decorate. */
+
+@keyframes sg-dot-flash {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes sg-status-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* Sweeps across a bar to say the number under it is still moving. Distance is
+   in multiples of the highlight's own width, which is a fraction of the bar. */
+@keyframes sg-sweep {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(386%);
+  }
+}
+
+/* Rises into place where it sits, rather than sliding in from an edge: a
+   slab floating over the page, not a drawer pulled out of the frame. */
+@keyframes sg-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sg-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  /* Three dots flashing in turn; see DotLoader. */
+  .animate-dot-flash {
+    animation: sg-dot-flash 1.2s ease-in-out infinite;
+  }
+
+  /* A slow glint across the words that say what is being done. */
+  .status-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      var(--muted-foreground) 35%,
+      var(--foreground) 50%,
+      var(--muted-foreground) 65%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: sg-status-shimmer 2.4s linear infinite;
+  }
+
+  /* A standing glow so a bar reads as live even between sweeps, plus the
+     sweep itself. The highlight is a third of the bar wide — across the whole
+     width it washes out into a gradient nobody can see moving. */
+  .progress-glow {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 10px 0 oklch(1 0 0 / 22%);
+  }
+
+  .progress-glow::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -35%;
+    width: 35%;
+    background: linear-gradient(90deg, transparent, oklch(1 0 0 / 90%), transparent);
+    animation: sg-sweep 1.6s ease-in-out infinite;
+  }
+
+  .animate-float-in {
+    animation: sg-float-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .animate-fade-in {
+    animation: sg-fade-in 240ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-dot-flash {
+      animation: none;
+      opacity: 1;
+    }
+
+    .status-shimmer {
+      animation: none;
+      color: inherit;
+      background-image: none;
+    }
+
+    .progress-glow::after {
+      animation: none;
+      opacity: 0;
+    }
+
+    .animate-float-in,
+    .animate-fade-in {
+      animation: none;
+    }
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* ---- Code -----------------------------------------------------------------
+
+   Code marked up by highlight.js, inside anything classed md-code. A few
+   colours, chosen to sit with the page's own in each theme; what is not
+   named stays the text's colour. */
+
+.md-code .hljs-comment,
+.md-code .hljs-quote,
+.md-code .hljs-meta {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.md-code .hljs-keyword,
+.md-code .hljs-selector-tag,
+.md-code .hljs-literal,
+.md-code .hljs-type,
+.md-code .hljs-built_in,
+.md-code .hljs-tag,
+.md-code .hljs-name {
+  color: var(--syn-keyword);
+}
+.md-code .hljs-string,
+.md-code .hljs-regexp,
+.md-code .hljs-addition,
+.md-code .hljs-symbol,
+.md-code .hljs-bullet {
+  color: var(--syn-string);
+}
+.md-code .hljs-number,
+.md-code .hljs-deletion,
+.md-code .hljs-variable,
+.md-code .hljs-template-variable {
+  color: var(--syn-number);
+}
+.md-code .hljs-attr,
+.md-code .hljs-attribute,
+.md-code .hljs-property,
+.md-code .hljs-title,
+.md-code .hljs-section,
+.md-code .hljs-params {
+  color: var(--syn-name);
+}
+.md-code .hljs-emphasis {
+  font-style: italic;
+}
+.md-code .hljs-strong {
+  font-weight: 600;
+}
+
+/* A field the browser has filled in keeps the page's colours. Left alone,
+   Chrome paints it pale yellow with black text — a lit rectangle on a dark
+   pane. The fill cannot be turned off, only outlasted. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--foreground);
+  caret-color: var(--foreground);
+  transition:
+    background-color 99999s ease-out 0s,
+    color 99999s ease-out 0s;
+}
+
+/* ---- tint-presets.css ---- */
+/*
+ * Solid Glass tuning classes — GENERATED by scripts/build-tint.mjs, do not edit by hand.
+ * Every value comes from tint-engine.mjs, a plain-JS port of upstream
+ * src/create/options.ts (MIT © 2026 DeepLethe). Nothing here is a hand-typed colour.
+ *
+ * Use: load solid-glass.css first, then this file, then put classes on <html>
+ * (or on any element, to compare looks side by side):
+ *   <html class="dark sg-tint-mauve sg-thick-thin sg-rim-bright sg-shadow-deep sg-accent-violet">
+ * Absence of a class = Solid Glass's own default. Mode follows `.dark` on <html>, as upstream.
+ * The page-glow blocks (--light-1/2/3) are ours; upstream's Create page picks its glow by hand.
+ */
+
+.sg-tint-neutral {
+  --background: oklch(0.925 0.007 265);
+  --panel: oklch(0.975 0.004 265 / 44%);
+  --card: oklch(0.98 0.004 265 / 60%);
+  --popover: oklch(0.985 0.003 265 / 96%);
+}
+
+html.dark .sg-tint-neutral,
+.sg-tint-neutral.dark {
+  --background: oklch(0.16 0 0);
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0 0 / 46%);
+  --popover: oklch(0.22 0 0 / 96%);
+}
+
+.sg-thick-default {
+  --panel: oklch(0.975 0.004 265 / 44%);
+  --card: oklch(0.98 0.004 265 / 60%);
+  --popover: oklch(0.985 0.003 265 / 96%);
+}
+
+html.dark .sg-thick-default,
+.sg-thick-default.dark {
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0 0 / 46%);
+  --popover: oklch(0.22 0 0 / 96%);
+}
+
+.sg-rim-default {
+  --glass-rim: oklch(1 0 0 / 90%);
+  --glass-control-rim: oklch(1 0 0 / 80%);
+}
+
+html.dark .sg-rim-default,
+.sg-rim-default.dark {
+  --glass-rim: oklch(1 0 0 / 16%);
+  --glass-control-rim: oklch(1 0 0 / 11%);
+}
+
+.sg-shadow-default {
+  --glass-shade: oklch(0.3 0.06 265 / 28%);
+  --glass-contact: oklch(0.25 0.03 265 / 6%);
+  --glass-lift: oklch(0.25 0.03 265 / 14%);
+}
+
+html.dark .sg-shadow-default,
+.sg-shadow-default.dark {
+  --glass-shade: oklch(0 0 0 / 60%);
+  --glass-contact: oklch(0 0 0 / 10%);
+  --glass-lift: oklch(0 0 0 / 22%);
+}
+
+.sg-tint-neutral.sg-thick-thin {
+  --panel: oklch(0.975 0.005 265 / 28%);
+  --card: oklch(0.98 0.005 265 / 40%);
+  --popover: oklch(0.985 0.005 265 / 86%);
+}
+
+html.dark .sg-tint-neutral.sg-thick-thin,
+.sg-tint-neutral.sg-thick-thin.dark {
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0 0 / 30%);
+  --popover: oklch(0.22 0 0 / 86%);
+}
+
+.sg-thick-thin {
+  --panel: oklch(0.975 0.005 265 / 28%);
+  --card: oklch(0.98 0.005 265 / 40%);
+  --popover: oklch(0.985 0.005 265 / 86%);
+}
+
+html.dark .sg-thick-thin,
+.sg-thick-thin.dark {
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0 0 / 30%);
+  --popover: oklch(0.22 0 0 / 86%);
+}
+
+.sg-tint-neutral.sg-thick-thick {
+  --panel: oklch(0.975 0.005 265 / 64%);
+  --card: oklch(0.98 0.005 265 / 82%);
+  --popover: oklch(0.985 0.005 265 / 99%);
+}
+
+html.dark .sg-tint-neutral.sg-thick-thick,
+.sg-tint-neutral.sg-thick-thick.dark {
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0 0 / 68%);
+  --popover: oklch(0.22 0 0 / 99%);
+}
+
+.sg-thick-thick {
+  --panel: oklch(0.975 0.005 265 / 64%);
+  --card: oklch(0.98 0.005 265 / 82%);
+  --popover: oklch(0.985 0.005 265 / 99%);
+}
+
+html.dark .sg-thick-thick,
+.sg-thick-thick.dark {
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0 0 / 68%);
+  --popover: oklch(0.22 0 0 / 99%);
+}
+
+.sg-tint-neutral.sg-thick-opaque {
+  --panel: oklch(0.947 0.005 265);
+  --card: oklch(0.958 0.005 265);
+  --popover: oklch(0.98 0.005 265);
+}
+
+html.dark .sg-tint-neutral.sg-thick-opaque,
+.sg-tint-neutral.sg-thick-opaque.dark {
+  --panel: oklch(0.19 0 0);
+  --card: oklch(0.225 0 0);
+  --popover: oklch(0.22 0 0);
+}
+
+.sg-tint-neutral.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-thick-opaque {
+  --panel: oklch(0.947 0.005 265);
+  --card: oklch(0.958 0.005 265);
+  --popover: oklch(0.98 0.005 265);
+}
+
+html.dark .sg-thick-opaque,
+.sg-thick-opaque.dark {
+  --panel: oklch(0.19 0 0);
+  --card: oklch(0.225 0 0);
+  --popover: oklch(0.22 0 0);
+}
+
+.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-tint-cool.sg-thick-thin {
+  --background: oklch(0.925 0.014 262);
+  --panel: oklch(0.975 0.014 262 / 28%);
+  --card: oklch(0.98 0.014 262 / 40%);
+  --popover: oklch(0.985 0.014 262 / 86%);
+}
+
+html.dark .sg-tint-cool.sg-thick-thin,
+.sg-tint-cool.sg-thick-thin.dark {
+  --background: oklch(0.16 0.014 262);
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0.014 262 / 30%);
+  --popover: oklch(0.22 0.014 262 / 86%);
+}
+
+.sg-tint-cool {
+  --background: oklch(0.925 0.014 262);
+  --panel: oklch(0.975 0.014 262 / 44%);
+  --card: oklch(0.98 0.014 262 / 60%);
+  --popover: oklch(0.985 0.014 262 / 96%);
+}
+
+html.dark .sg-tint-cool,
+.sg-tint-cool.dark {
+  --background: oklch(0.16 0.014 262);
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0.014 262 / 46%);
+  --popover: oklch(0.22 0.014 262 / 96%);
+}
+
+.sg-tint-cool.sg-thick-thick {
+  --background: oklch(0.925 0.014 262);
+  --panel: oklch(0.975 0.014 262 / 64%);
+  --card: oklch(0.98 0.014 262 / 82%);
+  --popover: oklch(0.985 0.014 262 / 99%);
+}
+
+html.dark .sg-tint-cool.sg-thick-thick,
+.sg-tint-cool.sg-thick-thick.dark {
+  --background: oklch(0.16 0.014 262);
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0.014 262 / 68%);
+  --popover: oklch(0.22 0.014 262 / 99%);
+}
+
+.sg-tint-cool.sg-thick-opaque {
+  --background: oklch(0.925 0.014 262);
+  --panel: oklch(0.947 0.014 262);
+  --card: oklch(0.958 0.014 262);
+  --popover: oklch(0.98 0.014 262);
+}
+
+html.dark .sg-tint-cool.sg-thick-opaque,
+.sg-tint-cool.sg-thick-opaque.dark {
+  --background: oklch(0.16 0.014 262);
+  --panel: oklch(0.19 0.014 262);
+  --card: oklch(0.225 0.014 262);
+  --popover: oklch(0.22 0.014 262);
+}
+
+.sg-tint-cool.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-tint-warm.sg-thick-thin {
+  --background: oklch(0.925 0.012 80);
+  --panel: oklch(0.975 0.012 80 / 28%);
+  --card: oklch(0.98 0.012 80 / 40%);
+  --popover: oklch(0.985 0.012 80 / 86%);
+}
+
+html.dark .sg-tint-warm.sg-thick-thin,
+.sg-tint-warm.sg-thick-thin.dark {
+  --background: oklch(0.16 0.011 70);
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0.011 70 / 30%);
+  --popover: oklch(0.22 0.011 70 / 86%);
+}
+
+.sg-tint-warm {
+  --background: oklch(0.925 0.012 80);
+  --panel: oklch(0.975 0.012 80 / 44%);
+  --card: oklch(0.98 0.012 80 / 60%);
+  --popover: oklch(0.985 0.012 80 / 96%);
+}
+
+html.dark .sg-tint-warm,
+.sg-tint-warm.dark {
+  --background: oklch(0.16 0.011 70);
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0.011 70 / 46%);
+  --popover: oklch(0.22 0.011 70 / 96%);
+}
+
+.sg-tint-warm.sg-thick-thick {
+  --background: oklch(0.925 0.012 80);
+  --panel: oklch(0.975 0.012 80 / 64%);
+  --card: oklch(0.98 0.012 80 / 82%);
+  --popover: oklch(0.985 0.012 80 / 99%);
+}
+
+html.dark .sg-tint-warm.sg-thick-thick,
+.sg-tint-warm.sg-thick-thick.dark {
+  --background: oklch(0.16 0.011 70);
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0.011 70 / 68%);
+  --popover: oklch(0.22 0.011 70 / 99%);
+}
+
+.sg-tint-warm.sg-thick-opaque {
+  --background: oklch(0.925 0.012 80);
+  --panel: oklch(0.947 0.012 80);
+  --card: oklch(0.958 0.012 80);
+  --popover: oklch(0.98 0.012 80);
+}
+
+html.dark .sg-tint-warm.sg-thick-opaque,
+.sg-tint-warm.sg-thick-opaque.dark {
+  --background: oklch(0.16 0.011 70);
+  --panel: oklch(0.19 0.011 70);
+  --card: oklch(0.225 0.011 70);
+  --popover: oklch(0.22 0.011 70);
+}
+
+.sg-tint-warm.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-tint-zinc.sg-thick-thin {
+  --background: oklch(0.925 0.008 286);
+  --panel: oklch(0.975 0.008 286 / 28%);
+  --card: oklch(0.98 0.008 286 / 40%);
+  --popover: oklch(0.985 0.008 286 / 86%);
+}
+
+html.dark .sg-tint-zinc.sg-thick-thin,
+.sg-tint-zinc.sg-thick-thin.dark {
+  --background: oklch(0.16 0.007 286);
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0.007 286 / 30%);
+  --popover: oklch(0.22 0.007 286 / 86%);
+}
+
+.sg-tint-zinc {
+  --background: oklch(0.925 0.008 286);
+  --panel: oklch(0.975 0.008 286 / 44%);
+  --card: oklch(0.98 0.008 286 / 60%);
+  --popover: oklch(0.985 0.008 286 / 96%);
+}
+
+html.dark .sg-tint-zinc,
+.sg-tint-zinc.dark {
+  --background: oklch(0.16 0.007 286);
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0.007 286 / 46%);
+  --popover: oklch(0.22 0.007 286 / 96%);
+}
+
+.sg-tint-zinc.sg-thick-thick {
+  --background: oklch(0.925 0.008 286);
+  --panel: oklch(0.975 0.008 286 / 64%);
+  --card: oklch(0.98 0.008 286 / 82%);
+  --popover: oklch(0.985 0.008 286 / 99%);
+}
+
+html.dark .sg-tint-zinc.sg-thick-thick,
+.sg-tint-zinc.sg-thick-thick.dark {
+  --background: oklch(0.16 0.007 286);
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0.007 286 / 68%);
+  --popover: oklch(0.22 0.007 286 / 99%);
+}
+
+.sg-tint-zinc.sg-thick-opaque {
+  --background: oklch(0.925 0.008 286);
+  --panel: oklch(0.947 0.008 286);
+  --card: oklch(0.958 0.008 286);
+  --popover: oklch(0.98 0.008 286);
+}
+
+html.dark .sg-tint-zinc.sg-thick-opaque,
+.sg-tint-zinc.sg-thick-opaque.dark {
+  --background: oklch(0.16 0.007 286);
+  --panel: oklch(0.19 0.007 286);
+  --card: oklch(0.225 0.007 286);
+  --popover: oklch(0.22 0.007 286);
+}
+
+.sg-tint-zinc.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-tint-mist.sg-thick-thin {
+  --background: oklch(0.925 0.014 205);
+  --panel: oklch(0.975 0.014 205 / 28%);
+  --card: oklch(0.98 0.014 205 / 40%);
+  --popover: oklch(0.985 0.014 205 / 86%);
+}
+
+html.dark .sg-tint-mist.sg-thick-thin,
+.sg-tint-mist.sg-thick-thin.dark {
+  --background: oklch(0.16 0.014 205);
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0.014 205 / 30%);
+  --popover: oklch(0.22 0.014 205 / 86%);
+}
+
+.sg-tint-mist {
+  --background: oklch(0.925 0.014 205);
+  --panel: oklch(0.975 0.014 205 / 44%);
+  --card: oklch(0.98 0.014 205 / 60%);
+  --popover: oklch(0.985 0.014 205 / 96%);
+}
+
+html.dark .sg-tint-mist,
+.sg-tint-mist.dark {
+  --background: oklch(0.16 0.014 205);
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0.014 205 / 46%);
+  --popover: oklch(0.22 0.014 205 / 96%);
+}
+
+.sg-tint-mist.sg-thick-thick {
+  --background: oklch(0.925 0.014 205);
+  --panel: oklch(0.975 0.014 205 / 64%);
+  --card: oklch(0.98 0.014 205 / 82%);
+  --popover: oklch(0.985 0.014 205 / 99%);
+}
+
+html.dark .sg-tint-mist.sg-thick-thick,
+.sg-tint-mist.sg-thick-thick.dark {
+  --background: oklch(0.16 0.014 205);
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0.014 205 / 68%);
+  --popover: oklch(0.22 0.014 205 / 99%);
+}
+
+.sg-tint-mist.sg-thick-opaque {
+  --background: oklch(0.925 0.014 205);
+  --panel: oklch(0.947 0.014 205);
+  --card: oklch(0.958 0.014 205);
+  --popover: oklch(0.98 0.014 205);
+}
+
+html.dark .sg-tint-mist.sg-thick-opaque,
+.sg-tint-mist.sg-thick-opaque.dark {
+  --background: oklch(0.16 0.014 205);
+  --panel: oklch(0.19 0.014 205);
+  --card: oklch(0.225 0.014 205);
+  --popover: oklch(0.22 0.014 205);
+}
+
+.sg-tint-mist.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-tint-olive.sg-thick-thin {
+  --background: oklch(0.925 0.016 120);
+  --panel: oklch(0.975 0.016 120 / 28%);
+  --card: oklch(0.98 0.016 120 / 40%);
+  --popover: oklch(0.985 0.016 120 / 86%);
+}
+
+html.dark .sg-tint-olive.sg-thick-thin,
+.sg-tint-olive.sg-thick-thin.dark {
+  --background: oklch(0.16 0.014 125);
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0.014 125 / 30%);
+  --popover: oklch(0.22 0.014 125 / 86%);
+}
+
+.sg-tint-olive {
+  --background: oklch(0.925 0.016 120);
+  --panel: oklch(0.975 0.016 120 / 44%);
+  --card: oklch(0.98 0.016 120 / 60%);
+  --popover: oklch(0.985 0.016 120 / 96%);
+}
+
+html.dark .sg-tint-olive,
+.sg-tint-olive.dark {
+  --background: oklch(0.16 0.014 125);
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0.014 125 / 46%);
+  --popover: oklch(0.22 0.014 125 / 96%);
+}
+
+.sg-tint-olive.sg-thick-thick {
+  --background: oklch(0.925 0.016 120);
+  --panel: oklch(0.975 0.016 120 / 64%);
+  --card: oklch(0.98 0.016 120 / 82%);
+  --popover: oklch(0.985 0.016 120 / 99%);
+}
+
+html.dark .sg-tint-olive.sg-thick-thick,
+.sg-tint-olive.sg-thick-thick.dark {
+  --background: oklch(0.16 0.014 125);
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0.014 125 / 68%);
+  --popover: oklch(0.22 0.014 125 / 99%);
+}
+
+.sg-tint-olive.sg-thick-opaque {
+  --background: oklch(0.925 0.016 120);
+  --panel: oklch(0.947 0.016 120);
+  --card: oklch(0.958 0.016 120);
+  --popover: oklch(0.98 0.016 120);
+}
+
+html.dark .sg-tint-olive.sg-thick-opaque,
+.sg-tint-olive.sg-thick-opaque.dark {
+  --background: oklch(0.16 0.014 125);
+  --panel: oklch(0.19 0.014 125);
+  --card: oklch(0.225 0.014 125);
+  --popover: oklch(0.22 0.014 125);
+}
+
+.sg-tint-olive.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-tint-taupe.sg-thick-thin {
+  --background: oklch(0.925 0.013 45);
+  --panel: oklch(0.975 0.013 45 / 28%);
+  --card: oklch(0.98 0.013 45 / 40%);
+  --popover: oklch(0.985 0.013 45 / 86%);
+}
+
+html.dark .sg-tint-taupe.sg-thick-thin,
+.sg-tint-taupe.sg-thick-thin.dark {
+  --background: oklch(0.16 0.012 40);
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0.012 40 / 30%);
+  --popover: oklch(0.22 0.012 40 / 86%);
+}
+
+.sg-tint-taupe {
+  --background: oklch(0.925 0.013 45);
+  --panel: oklch(0.975 0.013 45 / 44%);
+  --card: oklch(0.98 0.013 45 / 60%);
+  --popover: oklch(0.985 0.013 45 / 96%);
+}
+
+html.dark .sg-tint-taupe,
+.sg-tint-taupe.dark {
+  --background: oklch(0.16 0.012 40);
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0.012 40 / 46%);
+  --popover: oklch(0.22 0.012 40 / 96%);
+}
+
+.sg-tint-taupe.sg-thick-thick {
+  --background: oklch(0.925 0.013 45);
+  --panel: oklch(0.975 0.013 45 / 64%);
+  --card: oklch(0.98 0.013 45 / 82%);
+  --popover: oklch(0.985 0.013 45 / 99%);
+}
+
+html.dark .sg-tint-taupe.sg-thick-thick,
+.sg-tint-taupe.sg-thick-thick.dark {
+  --background: oklch(0.16 0.012 40);
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0.012 40 / 68%);
+  --popover: oklch(0.22 0.012 40 / 99%);
+}
+
+.sg-tint-taupe.sg-thick-opaque {
+  --background: oklch(0.925 0.013 45);
+  --panel: oklch(0.947 0.013 45);
+  --card: oklch(0.958 0.013 45);
+  --popover: oklch(0.98 0.013 45);
+}
+
+html.dark .sg-tint-taupe.sg-thick-opaque,
+.sg-tint-taupe.sg-thick-opaque.dark {
+  --background: oklch(0.16 0.012 40);
+  --panel: oklch(0.19 0.012 40);
+  --card: oklch(0.225 0.012 40);
+  --popover: oklch(0.22 0.012 40);
+}
+
+.sg-tint-taupe.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-tint-mauve.sg-thick-thin {
+  --background: oklch(0.925 0.015 320);
+  --panel: oklch(0.975 0.015 320 / 28%);
+  --card: oklch(0.98 0.015 320 / 40%);
+  --popover: oklch(0.985 0.015 320 / 86%);
+}
+
+html.dark .sg-tint-mauve.sg-thick-thin,
+.sg-tint-mauve.sg-thick-thin.dark {
+  --background: oklch(0.16 0.015 320);
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0.015 320 / 30%);
+  --popover: oklch(0.22 0.015 320 / 86%);
+}
+
+.sg-tint-mauve {
+  --background: oklch(0.925 0.015 320);
+  --panel: oklch(0.975 0.015 320 / 44%);
+  --card: oklch(0.98 0.015 320 / 60%);
+  --popover: oklch(0.985 0.015 320 / 96%);
+}
+
+html.dark .sg-tint-mauve,
+.sg-tint-mauve.dark {
+  --background: oklch(0.16 0.015 320);
+  --panel: oklch(1 0 0 / 4.5%);
+  --card: oklch(0.31 0.015 320 / 46%);
+  --popover: oklch(0.22 0.015 320 / 96%);
+}
+
+.sg-tint-mauve.sg-thick-thick {
+  --background: oklch(0.925 0.015 320);
+  --panel: oklch(0.975 0.015 320 / 64%);
+  --card: oklch(0.98 0.015 320 / 82%);
+  --popover: oklch(0.985 0.015 320 / 99%);
+}
+
+html.dark .sg-tint-mauve.sg-thick-thick,
+.sg-tint-mauve.sg-thick-thick.dark {
+  --background: oklch(0.16 0.015 320);
+  --panel: oklch(1 0 0 / 7.5%);
+  --card: oklch(0.31 0.015 320 / 68%);
+  --popover: oklch(0.22 0.015 320 / 99%);
+}
+
+.sg-tint-mauve.sg-thick-opaque {
+  --background: oklch(0.925 0.015 320);
+  --panel: oklch(0.947 0.015 320);
+  --card: oklch(0.958 0.015 320);
+  --popover: oklch(0.98 0.015 320);
+}
+
+html.dark .sg-tint-mauve.sg-thick-opaque,
+.sg-tint-mauve.sg-thick-opaque.dark {
+  --background: oklch(0.16 0.015 320);
+  --panel: oklch(0.19 0.015 320);
+  --card: oklch(0.225 0.015 320);
+  --popover: oklch(0.22 0.015 320);
+}
+
+.sg-tint-mauve.sg-thick-opaque {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-rim-soft {
+  --glass-rim: oklch(1 0 0 / 55%);
+  --glass-control-rim: oklch(1 0 0 / 50%);
+}
+
+html.dark .sg-rim-soft,
+.sg-rim-soft.dark {
+  --glass-rim: oklch(1 0 0 / 8%);
+  --glass-control-rim: oklch(1 0 0 / 5%);
+}
+
+.sg-rim-bright {
+  --glass-rim: oklch(1 0 0 / 100%);
+  --glass-control-rim: oklch(1 0 0 / 100%);
+}
+
+html.dark .sg-rim-bright,
+.sg-rim-bright.dark {
+  --glass-rim: oklch(1 0 0 / 32%);
+  --glass-control-rim: oklch(1 0 0 / 22%);
+}
+
+.sg-shadow-none {
+  --glass-shade: oklch(0.3 0.06 265 / 0%);
+  --glass-contact: oklch(0.25 0.03 265 / 0%);
+  --glass-lift: oklch(0.25 0.03 265 / 0%);
+}
+
+html.dark .sg-shadow-none,
+.sg-shadow-none.dark {
+  --glass-shade: oklch(0 0 0 / 0%);
+  --glass-contact: oklch(0 0 0 / 0%);
+  --glass-lift: oklch(0 0 0 / 0%);
+}
+
+.sg-shadow-soft {
+  --glass-shade: oklch(0.3 0.06 265 / 14%);
+  --glass-contact: oklch(0.25 0.03 265 / 3%);
+  --glass-lift: oklch(0.25 0.03 265 / 7%);
+}
+
+html.dark .sg-shadow-soft,
+.sg-shadow-soft.dark {
+  --glass-shade: oklch(0 0 0 / 30%);
+  --glass-contact: oklch(0 0 0 / 5%);
+  --glass-lift: oklch(0 0 0 / 11%);
+}
+
+.sg-shadow-deep {
+  --glass-shade: oklch(0.3 0.06 265 / 47.6%);
+  --glass-contact: oklch(0.25 0.03 265 / 10.2%);
+  --glass-lift: oklch(0.25 0.03 265 / 23.8%);
+}
+
+html.dark .sg-shadow-deep,
+.sg-shadow-deep.dark {
+  --glass-shade: oklch(0 0 0 / 100%);
+  --glass-contact: oklch(0 0 0 / 17%);
+  --glass-lift: oklch(0 0 0 / 37.4%);
+}
+
+.sg-accent-red {
+  --primary: oklch(0.54 0.2 27);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.54 0.2 27);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-red,
+.sg-accent-red.dark {
+  --primary: oklch(0.62 0.19 27);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.62 0.19 27);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-orange {
+  --primary: oklch(0.72 0.19 50);
+  --primary-foreground: oklch(0.24 0.05 50);
+  --sidebar-primary: oklch(0.72 0.19 50);
+  --sidebar-primary-foreground: oklch(0.24 0.05 50);
+}
+
+html.dark .sg-accent-orange,
+.sg-accent-orange.dark {
+  --primary: oklch(0.62 0.16 50);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.62 0.16 50);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-amber {
+  --primary: oklch(0.79 0.165 75);
+  --primary-foreground: oklch(0.24 0.05 75);
+  --sidebar-primary: oklch(0.79 0.165 75);
+  --sidebar-primary-foreground: oklch(0.24 0.05 75);
+}
+
+html.dark .sg-accent-amber,
+.sg-accent-amber.dark {
+  --primary: oklch(0.8 0.165 75);
+  --primary-foreground: oklch(0.24 0.05 75);
+  --sidebar-primary: oklch(0.8 0.165 75);
+  --sidebar-primary-foreground: oklch(0.24 0.05 75);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-yellow {
+  --primary: oklch(0.79 0.16 98);
+  --primary-foreground: oklch(0.24 0.05 98);
+  --sidebar-primary: oklch(0.79 0.16 98);
+  --sidebar-primary-foreground: oklch(0.24 0.05 98);
+}
+
+html.dark .sg-accent-yellow,
+.sg-accent-yellow.dark {
+  --primary: oklch(0.8 0.165 98);
+  --primary-foreground: oklch(0.24 0.05 98);
+  --sidebar-primary: oklch(0.8 0.165 98);
+  --sidebar-primary-foreground: oklch(0.24 0.05 98);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-lime {
+  --primary: oklch(0.79 0.17 128);
+  --primary-foreground: oklch(0.24 0.05 128);
+  --sidebar-primary: oklch(0.79 0.17 128);
+  --sidebar-primary-foreground: oklch(0.24 0.05 128);
+}
+
+html.dark .sg-accent-lime,
+.sg-accent-lime.dark {
+  --primary: oklch(0.8 0.17 128);
+  --primary-foreground: oklch(0.24 0.05 128);
+  --sidebar-primary: oklch(0.8 0.17 128);
+  --sidebar-primary-foreground: oklch(0.24 0.05 128);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-green {
+  --primary: oklch(0.48 0.13 150);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.48 0.13 150);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-green,
+.sg-accent-green.dark {
+  --primary: oklch(0.58 0.155 150);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.58 0.155 150);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-emerald {
+  --primary: oklch(0.48 0.1 163);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.48 0.1 163);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-emerald,
+.sg-accent-emerald.dark {
+  --primary: oklch(0.59 0.125 163);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.59 0.125 163);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-teal {
+  --primary: oklch(0.49 0.085 183);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.49 0.085 183);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-teal,
+.sg-accent-teal.dark {
+  --primary: oklch(0.59 0.105 183);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.59 0.105 183);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-cyan {
+  --primary: oklch(0.49 0.085 212);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.49 0.085 212);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-cyan,
+.sg-accent-cyan.dark {
+  --primary: oklch(0.59 0.1 212);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.59 0.1 212);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-sky {
+  --primary: oklch(0.49 0.1 235);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.49 0.1 235);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-sky,
+.sg-accent-sky.dark {
+  --primary: oklch(0.6 0.125 235);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.6 0.125 235);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-blue {
+  --primary: oklch(0.5 0.16 255);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.5 0.16 255);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-blue,
+.sg-accent-blue.dark {
+  --primary: oklch(0.61 0.19 255);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.61 0.19 255);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-indigo {
+  --primary: oklch(0.51 0.2 275);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.51 0.2 275);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-indigo,
+.sg-accent-indigo.dark {
+  --primary: oklch(0.61 0.19 275);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.61 0.19 275);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-violet {
+  --primary: oklch(0.52 0.2 293);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.52 0.2 293);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-violet,
+.sg-accent-violet.dark {
+  --primary: oklch(0.62 0.19 293);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.62 0.19 293);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-purple {
+  --primary: oklch(0.52 0.2 307);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.52 0.2 307);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-purple,
+.sg-accent-purple.dark {
+  --primary: oklch(0.62 0.19 307);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.62 0.19 307);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-fuchsia {
+  --primary: oklch(0.53 0.2 325);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.53 0.2 325);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-fuchsia,
+.sg-accent-fuchsia.dark {
+  --primary: oklch(0.62 0.19 325);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.62 0.19 325);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-pink {
+  --primary: oklch(0.54 0.2 350);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.54 0.2 350);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-pink,
+.sg-accent-pink.dark {
+  --primary: oklch(0.62 0.19 350);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.62 0.19 350);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-accent-rose {
+  --primary: oklch(0.54 0.2 12);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.54 0.2 12);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+}
+
+html.dark .sg-accent-rose,
+.sg-accent-rose.dark {
+  --primary: oklch(0.62 0.19 12);
+  --primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.62 0.19 12);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --primary-rim: oklch(1 0 0 / 30%);
+  --primary-under: oklch(0 0 0 / 40%);
+  --primary-inner: oklch(1 0 0 / 7%);
+  --primary-edge: oklch(0.2 0 0 / 30%);
+}
+
+.sg-chart-red {
+  --chart-1: oklch(0.7 0.15 27);
+  --chart-2: oklch(0.55 0.18 27);
+  --chart-3: oklch(0.46 0.16 27);
+  --chart-4: oklch(0.38 0.14 27);
+  --chart-5: oklch(0.31 0.12 27);
+}
+
+html.dark .sg-chart-red,
+.sg-chart-red.dark {
+  --chart-1: oklch(0.94 0.07 27);
+  --chart-2: oklch(0.83 0.13 27);
+  --chart-3: oklch(0.69 0.15 27);
+  --chart-4: oklch(0.56 0.13 27);
+  --chart-5: oklch(0.44 0.1 27);
+}
+
+.sg-chart-orange {
+  --chart-1: oklch(0.7 0.15 50);
+  --chart-2: oklch(0.55 0.18 50);
+  --chart-3: oklch(0.46 0.16 50);
+  --chart-4: oklch(0.38 0.14 50);
+  --chart-5: oklch(0.31 0.12 50);
+}
+
+html.dark .sg-chart-orange,
+.sg-chart-orange.dark {
+  --chart-1: oklch(0.94 0.07 50);
+  --chart-2: oklch(0.83 0.13 50);
+  --chart-3: oklch(0.69 0.15 50);
+  --chart-4: oklch(0.56 0.13 50);
+  --chart-5: oklch(0.44 0.1 50);
+}
+
+.sg-chart-amber {
+  --chart-1: oklch(0.7 0.15 75);
+  --chart-2: oklch(0.55 0.18 75);
+  --chart-3: oklch(0.46 0.16 75);
+  --chart-4: oklch(0.38 0.14 75);
+  --chart-5: oklch(0.31 0.12 75);
+}
+
+html.dark .sg-chart-amber,
+.sg-chart-amber.dark {
+  --chart-1: oklch(0.94 0.07 75);
+  --chart-2: oklch(0.83 0.13 75);
+  --chart-3: oklch(0.69 0.15 75);
+  --chart-4: oklch(0.56 0.13 75);
+  --chart-5: oklch(0.44 0.1 75);
+}
+
+.sg-chart-yellow {
+  --chart-1: oklch(0.7 0.15 98);
+  --chart-2: oklch(0.55 0.18 98);
+  --chart-3: oklch(0.46 0.16 98);
+  --chart-4: oklch(0.38 0.14 98);
+  --chart-5: oklch(0.31 0.12 98);
+}
+
+html.dark .sg-chart-yellow,
+.sg-chart-yellow.dark {
+  --chart-1: oklch(0.94 0.07 98);
+  --chart-2: oklch(0.83 0.13 98);
+  --chart-3: oklch(0.69 0.15 98);
+  --chart-4: oklch(0.56 0.13 98);
+  --chart-5: oklch(0.44 0.1 98);
+}
+
+.sg-chart-lime {
+  --chart-1: oklch(0.7 0.15 128);
+  --chart-2: oklch(0.55 0.18 128);
+  --chart-3: oklch(0.46 0.16 128);
+  --chart-4: oklch(0.38 0.14 128);
+  --chart-5: oklch(0.31 0.12 128);
+}
+
+html.dark .sg-chart-lime,
+.sg-chart-lime.dark {
+  --chart-1: oklch(0.94 0.07 128);
+  --chart-2: oklch(0.83 0.13 128);
+  --chart-3: oklch(0.69 0.15 128);
+  --chart-4: oklch(0.56 0.13 128);
+  --chart-5: oklch(0.44 0.1 128);
+}
+
+.sg-chart-green {
+  --chart-1: oklch(0.7 0.15 150);
+  --chart-2: oklch(0.55 0.18 150);
+  --chart-3: oklch(0.46 0.16 150);
+  --chart-4: oklch(0.38 0.14 150);
+  --chart-5: oklch(0.31 0.12 150);
+}
+
+html.dark .sg-chart-green,
+.sg-chart-green.dark {
+  --chart-1: oklch(0.94 0.07 150);
+  --chart-2: oklch(0.83 0.13 150);
+  --chart-3: oklch(0.69 0.15 150);
+  --chart-4: oklch(0.56 0.13 150);
+  --chart-5: oklch(0.44 0.1 150);
+}
+
+.sg-chart-emerald {
+  --chart-1: oklch(0.7 0.15 163);
+  --chart-2: oklch(0.55 0.18 163);
+  --chart-3: oklch(0.46 0.16 163);
+  --chart-4: oklch(0.38 0.14 163);
+  --chart-5: oklch(0.31 0.12 163);
+}
+
+html.dark .sg-chart-emerald,
+.sg-chart-emerald.dark {
+  --chart-1: oklch(0.94 0.07 163);
+  --chart-2: oklch(0.83 0.13 163);
+  --chart-3: oklch(0.69 0.15 163);
+  --chart-4: oklch(0.56 0.13 163);
+  --chart-5: oklch(0.44 0.1 163);
+}
+
+.sg-chart-teal {
+  --chart-1: oklch(0.7 0.15 183);
+  --chart-2: oklch(0.55 0.18 183);
+  --chart-3: oklch(0.46 0.16 183);
+  --chart-4: oklch(0.38 0.14 183);
+  --chart-5: oklch(0.31 0.12 183);
+}
+
+html.dark .sg-chart-teal,
+.sg-chart-teal.dark {
+  --chart-1: oklch(0.94 0.07 183);
+  --chart-2: oklch(0.83 0.13 183);
+  --chart-3: oklch(0.69 0.15 183);
+  --chart-4: oklch(0.56 0.13 183);
+  --chart-5: oklch(0.44 0.1 183);
+}
+
+.sg-chart-cyan {
+  --chart-1: oklch(0.7 0.15 212);
+  --chart-2: oklch(0.55 0.18 212);
+  --chart-3: oklch(0.46 0.16 212);
+  --chart-4: oklch(0.38 0.14 212);
+  --chart-5: oklch(0.31 0.12 212);
+}
+
+html.dark .sg-chart-cyan,
+.sg-chart-cyan.dark {
+  --chart-1: oklch(0.94 0.07 212);
+  --chart-2: oklch(0.83 0.13 212);
+  --chart-3: oklch(0.69 0.15 212);
+  --chart-4: oklch(0.56 0.13 212);
+  --chart-5: oklch(0.44 0.1 212);
+}
+
+.sg-chart-sky {
+  --chart-1: oklch(0.7 0.15 235);
+  --chart-2: oklch(0.55 0.18 235);
+  --chart-3: oklch(0.46 0.16 235);
+  --chart-4: oklch(0.38 0.14 235);
+  --chart-5: oklch(0.31 0.12 235);
+}
+
+html.dark .sg-chart-sky,
+.sg-chart-sky.dark {
+  --chart-1: oklch(0.94 0.07 235);
+  --chart-2: oklch(0.83 0.13 235);
+  --chart-3: oklch(0.69 0.15 235);
+  --chart-4: oklch(0.56 0.13 235);
+  --chart-5: oklch(0.44 0.1 235);
+}
+
+.sg-chart-blue {
+  --chart-1: oklch(0.7 0.15 255);
+  --chart-2: oklch(0.55 0.18 255);
+  --chart-3: oklch(0.46 0.16 255);
+  --chart-4: oklch(0.38 0.14 255);
+  --chart-5: oklch(0.31 0.12 255);
+}
+
+html.dark .sg-chart-blue,
+.sg-chart-blue.dark {
+  --chart-1: oklch(0.94 0.07 255);
+  --chart-2: oklch(0.83 0.13 255);
+  --chart-3: oklch(0.69 0.15 255);
+  --chart-4: oklch(0.56 0.13 255);
+  --chart-5: oklch(0.44 0.1 255);
+}
+
+.sg-chart-indigo {
+  --chart-1: oklch(0.7 0.15 275);
+  --chart-2: oklch(0.55 0.18 275);
+  --chart-3: oklch(0.46 0.16 275);
+  --chart-4: oklch(0.38 0.14 275);
+  --chart-5: oklch(0.31 0.12 275);
+}
+
+html.dark .sg-chart-indigo,
+.sg-chart-indigo.dark {
+  --chart-1: oklch(0.94 0.07 275);
+  --chart-2: oklch(0.83 0.13 275);
+  --chart-3: oklch(0.69 0.15 275);
+  --chart-4: oklch(0.56 0.13 275);
+  --chart-5: oklch(0.44 0.1 275);
+}
+
+.sg-chart-violet {
+  --chart-1: oklch(0.7 0.15 293);
+  --chart-2: oklch(0.55 0.18 293);
+  --chart-3: oklch(0.46 0.16 293);
+  --chart-4: oklch(0.38 0.14 293);
+  --chart-5: oklch(0.31 0.12 293);
+}
+
+html.dark .sg-chart-violet,
+.sg-chart-violet.dark {
+  --chart-1: oklch(0.94 0.07 293);
+  --chart-2: oklch(0.83 0.13 293);
+  --chart-3: oklch(0.69 0.15 293);
+  --chart-4: oklch(0.56 0.13 293);
+  --chart-5: oklch(0.44 0.1 293);
+}
+
+.sg-chart-purple {
+  --chart-1: oklch(0.7 0.15 307);
+  --chart-2: oklch(0.55 0.18 307);
+  --chart-3: oklch(0.46 0.16 307);
+  --chart-4: oklch(0.38 0.14 307);
+  --chart-5: oklch(0.31 0.12 307);
+}
+
+html.dark .sg-chart-purple,
+.sg-chart-purple.dark {
+  --chart-1: oklch(0.94 0.07 307);
+  --chart-2: oklch(0.83 0.13 307);
+  --chart-3: oklch(0.69 0.15 307);
+  --chart-4: oklch(0.56 0.13 307);
+  --chart-5: oklch(0.44 0.1 307);
+}
+
+.sg-chart-fuchsia {
+  --chart-1: oklch(0.7 0.15 325);
+  --chart-2: oklch(0.55 0.18 325);
+  --chart-3: oklch(0.46 0.16 325);
+  --chart-4: oklch(0.38 0.14 325);
+  --chart-5: oklch(0.31 0.12 325);
+}
+
+html.dark .sg-chart-fuchsia,
+.sg-chart-fuchsia.dark {
+  --chart-1: oklch(0.94 0.07 325);
+  --chart-2: oklch(0.83 0.13 325);
+  --chart-3: oklch(0.69 0.15 325);
+  --chart-4: oklch(0.56 0.13 325);
+  --chart-5: oklch(0.44 0.1 325);
+}
+
+.sg-chart-pink {
+  --chart-1: oklch(0.7 0.15 350);
+  --chart-2: oklch(0.55 0.18 350);
+  --chart-3: oklch(0.46 0.16 350);
+  --chart-4: oklch(0.38 0.14 350);
+  --chart-5: oklch(0.31 0.12 350);
+}
+
+html.dark .sg-chart-pink,
+.sg-chart-pink.dark {
+  --chart-1: oklch(0.94 0.07 350);
+  --chart-2: oklch(0.83 0.13 350);
+  --chart-3: oklch(0.69 0.15 350);
+  --chart-4: oklch(0.56 0.13 350);
+  --chart-5: oklch(0.44 0.1 350);
+}
+
+.sg-chart-rose {
+  --chart-1: oklch(0.7 0.15 12);
+  --chart-2: oklch(0.55 0.18 12);
+  --chart-3: oklch(0.46 0.16 12);
+  --chart-4: oklch(0.38 0.14 12);
+  --chart-5: oklch(0.31 0.12 12);
+}
+
+html.dark .sg-chart-rose,
+.sg-chart-rose.dark {
+  --chart-1: oklch(0.94 0.07 12);
+  --chart-2: oklch(0.83 0.13 12);
+  --chart-3: oklch(0.69 0.15 12);
+  --chart-4: oklch(0.56 0.13 12);
+  --chart-5: oklch(0.44 0.1 12);
+}
+
+.sg-radius-none {
+  --radius: 0rem;
+  --radius-control: 0rem;
+}
+
+.sg-radius-small {
+  --radius: 0.5rem;
+  --radius-control: 0.4rem;
+}
+
+.sg-radius-large {
+  --radius: 1.125rem;
+  --radius-control: 0.9rem;
+}
+
+.sg-blur-none {
+  --glass-blur: none;
+  --glass-blur-control: none;
+}
+
+.sg-blur-heavy {
+  --glass-blur: blur(48px) saturate(180%);
+  --glass-blur-control: blur(24px);
+}
+
+.sg-density-compact {
+  --spacing: 0.225rem;
+}
+.sg-density-roomy {
+  --spacing: 0.28rem;
+}
+
+/* ---- page glow ---- */
+
+.sg-tint-cool {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 262) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 262) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 262) 16%, transparent);
+}
+html.dark .sg-tint-cool,
+.sg-tint-cool.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 262) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 262) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 262) 16%, transparent);
+}
+
+.sg-tint-warm {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 80) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 80) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 80) 16%, transparent);
+}
+html.dark .sg-tint-warm,
+.sg-tint-warm.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 70) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 70) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 70) 16%, transparent);
+}
+
+.sg-tint-zinc {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 286) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 286) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 286) 16%, transparent);
+}
+html.dark .sg-tint-zinc,
+.sg-tint-zinc.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 286) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 286) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 286) 16%, transparent);
+}
+
+.sg-tint-mist {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 205) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 205) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 205) 16%, transparent);
+}
+html.dark .sg-tint-mist,
+.sg-tint-mist.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 205) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 205) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 205) 16%, transparent);
+}
+
+.sg-tint-olive {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 120) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 120) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 120) 16%, transparent);
+}
+html.dark .sg-tint-olive,
+.sg-tint-olive.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 125) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 125) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 125) 16%, transparent);
+}
+
+.sg-tint-taupe {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 45) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 45) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 45) 16%, transparent);
+}
+html.dark .sg-tint-taupe,
+.sg-tint-taupe.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 40) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 40) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 40) 16%, transparent);
+}
+
+.sg-tint-mauve {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 320) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 320) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 320) 16%, transparent);
+}
+html.dark .sg-tint-mauve,
+.sg-tint-mauve.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.09 320) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.09 320) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.09 320) 16%, transparent);
+}
+
+.sg-accent-red.sg-chart-red {
+  --light-1: color-mix(in oklch, oklch(0.54 0.2 27) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.54 0.2 27) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.54 0.2 27) 16%, transparent);
+}
+html.dark .sg-accent-red.sg-chart-red,
+.sg-accent-red.sg-chart-red.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.19 27) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.19 27) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.19 27) 16%, transparent);
+}
+
+.sg-accent-orange.sg-chart-orange {
+  --light-1: color-mix(in oklch, oklch(0.72 0.19 50) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.72 0.19 50) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.72 0.19 50) 16%, transparent);
+}
+html.dark .sg-accent-orange.sg-chart-orange,
+.sg-accent-orange.sg-chart-orange.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.16 50) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.16 50) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.16 50) 16%, transparent);
+}
+
+.sg-accent-amber.sg-chart-amber {
+  --light-1: color-mix(in oklch, oklch(0.79 0.165 75) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.79 0.165 75) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.79 0.165 75) 16%, transparent);
+}
+html.dark .sg-accent-amber.sg-chart-amber,
+.sg-accent-amber.sg-chart-amber.dark {
+  --light-1: color-mix(in oklch, oklch(0.8 0.165 75) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.8 0.165 75) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.8 0.165 75) 16%, transparent);
+}
+
+.sg-accent-yellow.sg-chart-yellow {
+  --light-1: color-mix(in oklch, oklch(0.79 0.16 98) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.79 0.16 98) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.79 0.16 98) 16%, transparent);
+}
+html.dark .sg-accent-yellow.sg-chart-yellow,
+.sg-accent-yellow.sg-chart-yellow.dark {
+  --light-1: color-mix(in oklch, oklch(0.8 0.165 98) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.8 0.165 98) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.8 0.165 98) 16%, transparent);
+}
+
+.sg-accent-lime.sg-chart-lime {
+  --light-1: color-mix(in oklch, oklch(0.79 0.17 128) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.79 0.17 128) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.79 0.17 128) 16%, transparent);
+}
+html.dark .sg-accent-lime.sg-chart-lime,
+.sg-accent-lime.sg-chart-lime.dark {
+  --light-1: color-mix(in oklch, oklch(0.8 0.17 128) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.8 0.17 128) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.8 0.17 128) 16%, transparent);
+}
+
+.sg-accent-green.sg-chart-green {
+  --light-1: color-mix(in oklch, oklch(0.48 0.13 150) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.48 0.13 150) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.48 0.13 150) 16%, transparent);
+}
+html.dark .sg-accent-green.sg-chart-green,
+.sg-accent-green.sg-chart-green.dark {
+  --light-1: color-mix(in oklch, oklch(0.58 0.155 150) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.58 0.155 150) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.58 0.155 150) 16%, transparent);
+}
+
+.sg-accent-emerald.sg-chart-emerald {
+  --light-1: color-mix(in oklch, oklch(0.48 0.1 163) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.48 0.1 163) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.48 0.1 163) 16%, transparent);
+}
+html.dark .sg-accent-emerald.sg-chart-emerald,
+.sg-accent-emerald.sg-chart-emerald.dark {
+  --light-1: color-mix(in oklch, oklch(0.59 0.125 163) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.59 0.125 163) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.59 0.125 163) 16%, transparent);
+}
+
+.sg-accent-teal.sg-chart-teal {
+  --light-1: color-mix(in oklch, oklch(0.49 0.085 183) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.49 0.085 183) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.49 0.085 183) 16%, transparent);
+}
+html.dark .sg-accent-teal.sg-chart-teal,
+.sg-accent-teal.sg-chart-teal.dark {
+  --light-1: color-mix(in oklch, oklch(0.59 0.105 183) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.59 0.105 183) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.59 0.105 183) 16%, transparent);
+}
+
+.sg-accent-cyan.sg-chart-cyan {
+  --light-1: color-mix(in oklch, oklch(0.49 0.085 212) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.49 0.085 212) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.49 0.085 212) 16%, transparent);
+}
+html.dark .sg-accent-cyan.sg-chart-cyan,
+.sg-accent-cyan.sg-chart-cyan.dark {
+  --light-1: color-mix(in oklch, oklch(0.59 0.1 212) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.59 0.1 212) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.59 0.1 212) 16%, transparent);
+}
+
+.sg-accent-sky.sg-chart-sky {
+  --light-1: color-mix(in oklch, oklch(0.49 0.1 235) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.49 0.1 235) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.49 0.1 235) 16%, transparent);
+}
+html.dark .sg-accent-sky.sg-chart-sky,
+.sg-accent-sky.sg-chart-sky.dark {
+  --light-1: color-mix(in oklch, oklch(0.6 0.125 235) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.6 0.125 235) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.6 0.125 235) 16%, transparent);
+}
+
+.sg-accent-blue.sg-chart-blue {
+  --light-1: color-mix(in oklch, oklch(0.5 0.16 255) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.5 0.16 255) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.5 0.16 255) 16%, transparent);
+}
+html.dark .sg-accent-blue.sg-chart-blue,
+.sg-accent-blue.sg-chart-blue.dark {
+  --light-1: color-mix(in oklch, oklch(0.61 0.19 255) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.61 0.19 255) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.61 0.19 255) 16%, transparent);
+}
+
+.sg-accent-indigo.sg-chart-indigo {
+  --light-1: color-mix(in oklch, oklch(0.51 0.2 275) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.51 0.2 275) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.51 0.2 275) 16%, transparent);
+}
+html.dark .sg-accent-indigo.sg-chart-indigo,
+.sg-accent-indigo.sg-chart-indigo.dark {
+  --light-1: color-mix(in oklch, oklch(0.61 0.19 275) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.61 0.19 275) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.61 0.19 275) 16%, transparent);
+}
+
+.sg-accent-violet.sg-chart-violet {
+  --light-1: color-mix(in oklch, oklch(0.52 0.2 293) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.52 0.2 293) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.52 0.2 293) 16%, transparent);
+}
+html.dark .sg-accent-violet.sg-chart-violet,
+.sg-accent-violet.sg-chart-violet.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.19 293) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.19 293) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.19 293) 16%, transparent);
+}
+
+.sg-accent-purple.sg-chart-purple {
+  --light-1: color-mix(in oklch, oklch(0.52 0.2 307) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.52 0.2 307) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.52 0.2 307) 16%, transparent);
+}
+html.dark .sg-accent-purple.sg-chart-purple,
+.sg-accent-purple.sg-chart-purple.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.19 307) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.19 307) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.19 307) 16%, transparent);
+}
+
+.sg-accent-fuchsia.sg-chart-fuchsia {
+  --light-1: color-mix(in oklch, oklch(0.53 0.2 325) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.53 0.2 325) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.53 0.2 325) 16%, transparent);
+}
+html.dark .sg-accent-fuchsia.sg-chart-fuchsia,
+.sg-accent-fuchsia.sg-chart-fuchsia.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.19 325) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.19 325) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.19 325) 16%, transparent);
+}
+
+.sg-accent-pink.sg-chart-pink {
+  --light-1: color-mix(in oklch, oklch(0.54 0.2 350) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.54 0.2 350) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.54 0.2 350) 16%, transparent);
+}
+html.dark .sg-accent-pink.sg-chart-pink,
+.sg-accent-pink.sg-chart-pink.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.19 350) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.19 350) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.19 350) 16%, transparent);
+}
+
+.sg-accent-rose.sg-chart-rose {
+  --light-1: color-mix(in oklch, oklch(0.54 0.2 12) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.54 0.2 12) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.54 0.2 12) 16%, transparent);
+}
+html.dark .sg-accent-rose.sg-chart-rose,
+.sg-accent-rose.sg-chart-rose.dark {
+  --light-1: color-mix(in oklch, oklch(0.62 0.19 12) 30%, transparent);
+  --light-2: color-mix(in oklch, oklch(0.62 0.19 12) 20%, transparent);
+  --light-3: color-mix(in oklch, oklch(0.62 0.19 12) 16%, transparent);
+}
+
+/* ---- theme-shim.css ---- */
+/*
+ * theme-shim.css — the plain-CSS stand-in for Tailwind, for pages that load
+ * solid-glass.css WITHOUT Tailwind (single-file demos, internal tools, e-mail
+ * safe pages). Solid Glass only draws the edges of a pane; the fill, the
+ * corner radius and the control sizes normally come from Tailwind utilities
+ * generated out of shadcn's theme tokens. This file supplies just those.
+ *
+ * Load order: solid-glass.css → tint-presets.css (optional) → this file.
+ * Class names match Tailwind on purpose so upstream's own rules hit them.
+ * Layout, spacing and typography of a real page stay yours to write.
+ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-family: var(--font-sans, "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif);
+}
+body {
+  margin: 0;
+  color: var(--foreground);
+  background-color: var(--background);
+  /* The theme's --light-1/2/3 are designed to be seen through a pane; without
+     something behind, glass and flat look identical. */
+  background-image:
+    radial-gradient(52rem 30rem at 12% -6%, var(--light-1), transparent 70%),
+    radial-gradient(46rem 30rem at 92% 8%, var(--light-2), transparent 72%),
+    radial-gradient(60rem 34rem at 60% 108%, var(--light-3), transparent 70%);
+  background-attachment: fixed;
+  font-size: 14px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fills the theme expects Tailwind to have written. */
+.bg-background { background-color: var(--background); }
+.bg-card { background-color: var(--card); }
+.bg-popover { background-color: var(--popover); }
+.bg-sidebar { background-color: var(--sidebar); }
+.bg-secondary { background-color: var(--secondary); color: var(--secondary-foreground); }
+.bg-muted { background-color: var(--muted); color: var(--muted-foreground); }
+.bg-destructive { background-color: color-mix(in oklch, var(--destructive) 12%, transparent); color: var(--destructive); }
+.bg-primary { background-color: var(--primary); color: var(--primary-foreground); }
+.text-foreground { color: var(--foreground); }
+.text-muted-foreground { color: var(--muted-foreground); }
+.text-primary { color: var(--primary); }
+
+/* Corners: Tailwind v4's scale, driven by the theme's own --radius. */
+.rounded-none { border-radius: 0; }
+.rounded-sm { border-radius: calc(var(--radius) - 4px); }
+.rounded-md { border-radius: calc(var(--radius) - 2px); }
+.rounded-lg { border-radius: var(--radius); }
+.rounded-xl { border-radius: calc(var(--radius) + 4px); }
+.rounded-2xl { border-radius: calc(var(--radius) + 8px); }
+.rounded-full { border-radius: 999px; }
+
+/* Control boxes: the theme styles these by [data-slot], sizes are ours. */
+[data-slot="button"] {
+  display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px;
+  border: 1px solid transparent; border-radius: var(--radius); cursor: pointer;
+  font-size: 13.5px; line-height: 1.4; white-space: nowrap; text-decoration: none;
+}
+[data-slot="button"][data-variant="outline"] { background-color: transparent; }
+[data-slot="button"][data-variant="ghost"] { background-color: transparent; border-color: transparent; }
+[data-slot="badge"] {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px;
+  border: 1px solid transparent; border-radius: var(--radius); font-size: 12px; line-height: 1.6;
+}
+[data-slot="input"], [data-slot="textarea"] {
+  width: 100%; padding: 8px 11px; border: 1px solid transparent;
+  border-radius: var(--radius); background-clip: padding-box; font: inherit;
+}
+[data-slot="textarea"] { min-height: 62px; resize: vertical; }
+[data-slot="select-trigger"] {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px;
+  border: 1px solid transparent; border-radius: var(--radius); background-clip: padding-box; cursor: pointer;
+}
+[data-slot="separator"] { height: 1px; border: 0; background: var(--border); margin: 10px 0; }
+[data-slot="tabs-list"] { display: inline-flex; gap: 4px; padding: 3px; border-radius: var(--radius); background-color: var(--panel); }
+[data-slot="tabs-trigger"] {
+  padding: 5px 12px; border: 1px solid transparent; border-radius: var(--radius);
+  background: none; cursor: pointer; color: var(--muted-foreground); font: inherit;
+}
+[data-slot="tabs-trigger"][data-active]:not([data-active="false"]) { color: var(--foreground); }
+[data-slot="bubble-content"] {
+  display: inline-block; max-width: 100%; padding: 9px 13px;
+  border: 1px solid transparent; border-radius: calc(var(--radius) * 0.9);
+}
+[data-slot="field-label"] { display: block; font-size: 12.5px; font-weight: 600; }
+
+/* Surfaces. Padding/radius are what a shadcn component would have carried. */
+.bg-card, .bg-popover, .glass-panel, [data-slot="sidebar-inner"] { padding: 13px; border-radius: var(--radius); }
+.glass-panel { background-color: var(--panel); }
+
+/* Small helpers used by the preview; replace with your own layout. */
+.sg-row { display: flex; align-items: center; gap: 8px; }
+.sg-between { justify-content: space-between; }
+.sg-col { display: flex; flex-direction: column; gap: 8px; }
+.sg-spacer { flex: 1; }
+.sg-note { font-size: 12.5px; color: var(--muted-foreground); }
+.sg-mono { font-family: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace); font-size: 12.5px; }
+
+
+/* 只有这个演示页用到的排版 */
+.sg-wrapline { flex-wrap: wrap; gap: 6px; }
+.sg-lab { min-width: 62px; }
+.sg-chip { padding: 4px 10px; border-radius: 999px; border: 1px solid transparent; background: var(--panel); cursor: pointer; font: inherit; font-size: 12.5px; color: var(--foreground); }
+.sg-chip[aria-pressed="true"] { background: var(--primary); color: var(--primary-foreground); }
+.bar { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 0; z-index: 5; }
+.grid { display: grid; grid-template-columns: 220px minmax(0, 1fr) 260px; gap: 14px; padding: 14px; align-items: start; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.sg-cell { min-height: 96px; }
+.strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 14px 14px; }
+@media (max-width: 980px) { .grid, .strip { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="bar glass-panel">
+  <div class="sg-row sg-between">
+    <b>Solid Glass 旋钮台</b>
+    <span class="sg-mono" id="out"></span>
+    <span class="sg-spacer"></span>
+    <button data-slot="button" id="mode">深色</button>
+  </div>
+  <div class="sg-row sg-wrapline"><span class="sg-note sg-lab">底色</span><button class="sg-chip" data-knob="tint" data-val="neutral" aria-pressed="true">中性</button><button class="sg-chip" data-knob="tint" data-val="cool" aria-pressed="false">石板蓝</button><button class="sg-chip" data-knob="tint" data-val="warm" aria-pressed="false">暖石</button><button class="sg-chip" data-knob="tint" data-val="zinc" aria-pressed="false">锌灰</button><button class="sg-chip" data-knob="tint" data-val="mist" aria-pressed="false">雾</button><button class="sg-chip" data-knob="tint" data-val="olive" aria-pressed="false">橄榄</button><button class="sg-chip" data-knob="tint" data-val="taupe" aria-pressed="false">灰褐</button><button class="sg-chip" data-knob="tint" data-val="mauve" aria-pressed="false">藕紫</button></div>
+<div class="sg-row sg-wrapline"><span class="sg-note sg-lab">强调色</span><button class="sg-chip" data-knob="accent" data-val="red" aria-pressed="false">红</button><button class="sg-chip" data-knob="accent" data-val="orange" aria-pressed="false">橙</button><button class="sg-chip" data-knob="accent" data-val="amber" aria-pressed="false">琥珀</button><button class="sg-chip" data-knob="accent" data-val="yellow" aria-pressed="false">黄</button><button class="sg-chip" data-knob="accent" data-val="lime" aria-pressed="false">青柠</button><button class="sg-chip" data-knob="accent" data-val="green" aria-pressed="false">绿</button><button class="sg-chip" data-knob="accent" data-val="emerald" aria-pressed="false">翠绿</button><button class="sg-chip" data-knob="accent" data-val="teal" aria-pressed="false">蓝绿</button><button class="sg-chip" data-knob="accent" data-val="cyan" aria-pressed="false">青</button><button class="sg-chip" data-knob="accent" data-val="sky" aria-pressed="false">天蓝</button><button class="sg-chip" data-knob="accent" data-val="blue" aria-pressed="false">蓝</button><button class="sg-chip" data-knob="accent" data-val="indigo" aria-pressed="false">靛蓝</button><button class="sg-chip" data-knob="accent" data-val="violet" aria-pressed="false">紫罗兰</button><button class="sg-chip" data-knob="accent" data-val="purple" aria-pressed="false">紫</button><button class="sg-chip" data-knob="accent" data-val="fuchsia" aria-pressed="false">洋红</button><button class="sg-chip" data-knob="accent" data-val="pink" aria-pressed="false">粉</button><button class="sg-chip" data-knob="accent" data-val="rose" aria-pressed="false">玫红</button></div>
+<div class="sg-row sg-wrapline"><span class="sg-note sg-lab">图表色</span><button class="sg-chip" data-knob="chart" data-val="red" aria-pressed="false">red</button><button class="sg-chip" data-knob="chart" data-val="orange" aria-pressed="false">orange</button><button class="sg-chip" data-knob="chart" data-val="amber" aria-pressed="false">amber</button><button class="sg-chip" data-knob="chart" data-val="yellow" aria-pressed="false">yellow</button><button class="sg-chip" data-knob="chart" data-val="lime" aria-pressed="false">lime</button><button class="sg-chip" data-knob="chart" data-val="green" aria-pressed="false">green</button><button class="sg-chip" data-knob="chart" data-val="emerald" aria-pressed="false">emerald</button><button class="sg-chip" data-knob="chart" data-val="teal" aria-pressed="false">teal</button><button class="sg-chip" data-knob="chart" data-val="cyan" aria-pressed="false">cyan</button><button class="sg-chip" data-knob="chart" data-val="sky" aria-pressed="false">sky</button><button class="sg-chip" data-knob="chart" data-val="blue" aria-pressed="false">blue</button><button class="sg-chip" data-knob="chart" data-val="indigo" aria-pressed="false">indigo</button><button class="sg-chip" data-knob="chart" data-val="violet" aria-pressed="false">violet</button><button class="sg-chip" data-knob="chart" data-val="purple" aria-pressed="false">purple</button><button class="sg-chip" data-knob="chart" data-val="fuchsia" aria-pressed="false">fuchsia</button><button class="sg-chip" data-knob="chart" data-val="pink" aria-pressed="false">pink</button><button class="sg-chip" data-knob="chart" data-val="rose" aria-pressed="false">rose</button></div>
+<div class="sg-row sg-wrapline"><span class="sg-note sg-lab">厚度</span><button class="sg-chip" data-knob="thickness" data-val="thin" aria-pressed="false">更透</button><button class="sg-chip" data-knob="thickness" data-val="default" aria-pressed="true">默认</button><button class="sg-chip" data-knob="thickness" data-val="thick" aria-pressed="false">更厚</button><button class="sg-chip" data-knob="thickness" data-val="opaque" aria-pressed="false">实心</button></div>
+<div class="sg-row sg-wrapline"><span class="sg-note sg-lab">边缘高光</span><button class="sg-chip" data-knob="rim" data-val="soft" aria-pressed="false">柔</button><button class="sg-chip" data-knob="rim" data-val="default" aria-pressed="true">默认</button><button class="sg-chip" data-knob="rim" data-val="bright" aria-pressed="false">亮</button></div>
+<div class="sg-row sg-wrapline"><span class="sg-note sg-lab">投影</span><button class="sg-chip" data-knob="shadow" data-val="none" aria-pressed="false">无</button><button class="sg-chip" data-knob="shadow" data-val="soft" aria-pressed="false">浅</button><button class="sg-chip" data-knob="shadow" data-val="default" aria-pressed="true">默认</button><button class="sg-chip" data-knob="shadow" data-val="deep" aria-pressed="false">深</button></div>
+<div class="sg-row sg-wrapline"><span class="sg-note sg-lab">背景模糊</span><button class="sg-chip" data-knob="blur" data-val="none" aria-pressed="false">不糊</button><button class="sg-chip" data-knob="blur" data-val="default" aria-pressed="true">默认</button><button class="sg-chip" data-knob="blur" data-val="heavy" aria-pressed="false">更糊</button></div>
+<div class="sg-row sg-wrapline"><span class="sg-note sg-lab">圆角</span><button class="sg-chip" data-knob="radius" data-val="none" aria-pressed="false">直角</button><button class="sg-chip" data-knob="radius" data-val="small" aria-pressed="false">小</button><button class="sg-chip" data-knob="radius" data-val="default" aria-pressed="true">默认</button><button class="sg-chip" data-knob="radius" data-val="large" aria-pressed="false">大</button></div>
+  <div class="sg-row"><span class="sg-note">没接的旋钮：</span><span class="sg-mono">font / heading / density</span><span class="sg-note">—— 24 款字体全是西文，汉字不受影响；字体文件在 npm 包里，本仓库不带</span></div>
+</div>
+
+<div class="grid">
+  <aside class="glass-panel"><div data-slot="sidebar-inner" class="bg-sidebar sg-col">
+    <span class="sg-note">项目 · 季度报表</span>
+    <div class="sg-col">
+      <span data-slot="button" class="bg-primary glass-primary">数据清洗任务</span>
+      <span class="sg-row"><span class="sg-spacer"></span><span class="sg-note">12</span></span>
+      <span>周报汇总</span><span>指标看板</span><span>导出 PDF</span>
+    </div>
+    <hr data-slot="separator">
+    <span class="sg-note">最近用过</span>
+    <span>异常检测</span><span>归档旧表</span>
+  </div></aside>
+
+  <main class="stack">
+    <div class="sg-row" style="justify-content:flex-end">
+      <div data-slot="bubble" data-variant="default"><span data-slot="bubble-content" class="glass-control">把这 8 个数据源统一到季度口径，出双周对比</span></div>
+    </div>
+    <section class="bg-card sg-col">
+      <b>跑了 3 步 +7 −0</b>
+      <button data-slot="button" class="glass-control" style="justify-content:space-between"><span>读了 8 张源表</span><span class="sg-note">›</span></button>
+      <button data-slot="button" class="glass-control" style="justify-content:space-between"><span>生成季度汇总 ×8</span><span class="sg-note">›</span></button>
+      <button data-slot="button" class="glass-control" style="justify-content:space-between"><span>写入 output/quarter/</span><span class="sg-note">›</span></button>
+    </section>
+    <section class="bg-card sg-col">
+      <span style="color:var(--status-interrupted);font-weight:600">需要你决定</span>
+      <span>8 张全部按新口径重算，还是先出 4 张给评审看？</span>
+      <div class="sg-row">
+        <button data-slot="button" class="bg-primary glass-primary">全部重算</button>
+        <button data-slot="button" class="bg-secondary" data-variant="secondary">逐张核对</button>
+        <button data-slot="button" data-variant="outline">先出 4 张</button>
+      </div>
+    </section>
+    <section class="bg-card sg-col">
+      <textarea data-slot="textarea" placeholder="继续跑，或者换个方向……"></textarea>
+      <div class="sg-row">
+        <span data-slot="badge" class="bg-secondary" data-variant="secondary">quarter_02.csv</span>
+        <span data-slot="badge" data-variant="outline" class="sg-note">源表.zip · 60%</span>
+        <span class="sg-spacer"></span>
+        <span class="sg-mono" style="color:var(--chart-2)">▮▮</span><span class="sg-mono" style="color:var(--chart-4)">▮▮</span>
+      </div>
+    </section>
+  </main>
+
+  <div class="stack">
+    <section class="bg-card sg-col">
+      <b>后台任务</b>
+      <div class="sg-row"><span style="width:7px;height:7px;border-radius:999px;background:var(--status-running)"></span>重算 4 张<span class="sg-spacer"></span><span class="sg-note">2m14s</span></div>
+      <div class="sg-row"><span style="width:7px;height:7px;border-radius:999px;background:var(--status-done)"></span>批量导出 PDF<span class="sg-spacer"></span><span class="sg-note">18s</span></div>
+    </section>
+    <section class="bg-popover sg-col">
+      <b>浮层（最厚的一层玻璃）</b>
+      <div class="sg-row sg-between"><span>重新算这批</span><span class="sg-note">⌘ R</span></div>
+      <div class="sg-row sg-between"><span>存为预设</span><span class="sg-note">⌘ S</span></div>
+    </section>
+  </div>
+</div>
+
+<div class="strip"><div class="bg-card sg-col sg-cell sg-thick-thin sg-rim-soft sg-shadow-none"><b>平</b><span class="sg-note">厚度 / 高光 / 投影不同，颜色相同</span>
+  <span class="sg-row"><button data-slot="button" class="bg-primary glass-primary">按钮</button><span data-slot="badge" class="bg-secondary" data-variant="secondary">标签</span></span></div><div class="bg-card sg-col sg-cell sg-thick-default sg-rim-soft sg-shadow-soft"><b>柔</b><span class="sg-note">厚度 / 高光 / 投影不同，颜色相同</span>
+  <span class="sg-row"><button data-slot="button" class="bg-primary glass-primary">按钮</button><span data-slot="badge" class="bg-secondary" data-variant="secondary">标签</span></span></div><div class="bg-card sg-col sg-cell sg-thick-default sg-rim-default sg-shadow-default"><b>标准</b><span class="sg-note">厚度 / 高光 / 投影不同，颜色相同</span>
+  <span class="sg-row"><button data-slot="button" class="bg-primary glass-primary">按钮</button><span data-slot="badge" class="bg-secondary" data-variant="secondary">标签</span></span></div><div class="bg-card sg-col sg-cell sg-thick-thick sg-rim-bright sg-shadow-deep"><b>强</b><span class="sg-note">厚度 / 高光 / 投影不同，颜色相同</span>
+  <span class="sg-row"><button data-slot="button" class="bg-primary glass-primary">按钮</button><span data-slot="badge" class="bg-secondary" data-variant="secondary">标签</span></span></div></div>
+
+<script>
+const KNOBS = [{"key":"tint","prefix":"sg-tint","none":null,"def":"neutral"},{"key":"accent","prefix":"sg-accent","none":"ink","def":"ink"},{"key":"chart","prefix":"sg-chart","none":"neutral","def":"neutral"},{"key":"thickness","prefix":"sg-thick","none":null,"def":"default"},{"key":"rim","prefix":"sg-rim","none":null,"def":"default"},{"key":"shadow","prefix":"sg-shadow","none":null,"def":"default"},{"key":"blur","prefix":"sg-blur","none":null,"def":"default"},{"key":"radius","prefix":"sg-radius","none":null,"def":"default"}];
+const EMITTED = new Set(["sg-tint-neutral","sg-thick-default","sg-rim-default","sg-shadow-default","sg-thick-thin","sg-thick-thick","sg-thick-opaque","sg-tint-cool","sg-tint-warm","sg-tint-zinc","sg-tint-mist","sg-tint-olive","sg-tint-taupe","sg-tint-mauve","sg-rim-soft","sg-rim-bright","sg-shadow-none","sg-shadow-soft","sg-shadow-deep","sg-accent-red","sg-accent-orange","sg-accent-amber","sg-accent-yellow","sg-accent-lime","sg-accent-green","sg-accent-emerald","sg-accent-teal","sg-accent-cyan","sg-accent-sky","sg-accent-blue","sg-accent-indigo","sg-accent-violet","sg-accent-purple","sg-accent-fuchsia","sg-accent-pink","sg-accent-rose","sg-chart-red","sg-chart-orange","sg-chart-amber","sg-chart-yellow","sg-chart-lime","sg-chart-green","sg-chart-emerald","sg-chart-teal","sg-chart-cyan","sg-chart-sky","sg-chart-blue","sg-chart-indigo","sg-chart-violet","sg-chart-purple","sg-chart-fuchsia","sg-chart-pink","sg-chart-rose","sg-radius-none","sg-radius-small","sg-radius-large","sg-blur-none","sg-blur-heavy","sg-density-compact","sg-density-roomy"]);
+const root = document.documentElement;
+function apply(key, val) {
+  const k = KNOBS.find((x) => x.key === key);
+  root.classList.remove(...[...root.classList].filter((c) => c.startsWith(k.prefix + "-")));
+  const cls = k.prefix + "-" + val;
+  if (val !== k.none && EMITTED.has(cls)) root.classList.add(cls);
+  document.querySelectorAll('.sg-chip[data-knob="' + key + '"]').forEach((b) => (b.ariaPressed = String(b.dataset.val === val)));
+  out();
+}
+function out() {
+  const cls = [...root.classList].filter((c) => c !== "dark").join(" ");
+  document.getElementById("out").textContent = "<html class=\"cls " + cls + "\">";
+}
+document.querySelectorAll(".sg-chip").forEach((b) => b.addEventListener("click", () => apply(b.dataset.knob, b.dataset.val)));
+document.getElementById("mode").addEventListener("click", function () {
+  const dark = root.classList.toggle("dark");
+  this.textContent = dark ? "深色" : "浅色";
+});
+/* 让按钮的选中状态跟 <html> 上真实的类一致（初始用的是藕紫） */
+KNOBS.forEach((k) => {
+  const on = [...root.classList].find((c) => c.startsWith(k.prefix + "-"));
+  apply(k.key, on ? on.slice(k.prefix.length + 1) : k.def);
+});
+</script>
+</body>
+</html>
