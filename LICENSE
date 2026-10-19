@@ -12,13 +12,6 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
-Except as noted in NOTICE.md, this license covers the material in this
-repository only. The files listed in NOTICE.md — the Solid Glass stylesheet and
-the upstream sources under `skills/solid-glass/assets/upstream/` — remain under
-their own MIT license, Copyright (c) 2026 DeepLethe, a copy of which is included
-at `skills/solid-glass/assets/upstream/LICENSE.solid-glass` and must travel with
-any redistribution of those files.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
