@@ -1,0 +1,9 @@
+# 仓库内一律用 LF：生成物（tint-presets.css、preview.html）要能逐字节比对，
+# Windows 检出时转成 CRLF 会让 diff 看起来整文件都变了。
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.zip binary

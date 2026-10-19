@@ -137,9 +137,11 @@ const header = `/*
 
 const css = `${header}\n${rules.join("\n\n")}\n\n/* ---- page glow ---- */\n\n${washLines.join("\n\n")}\n`;
 
-if (process.argv.includes("--stdout")) {
+const asStdout = process.argv.includes("--stdout");
+if (asStdout) {
   process.stdout.write(css);
 } else {
   writeFileSync(join(ASSETS, "tint-presets.css"), css, "utf8");
+  console.log(`wrote assets/tint-presets.css — ${count} 个规则块, ${Math.round(css.length / 1024)}KB`);
 }
-console.log(`${process.argv.includes("--stdout") ? "printed" : "wrote assets/tint-presets.css"} — ${count} 个规则块, ${Math.round(css.length / 1024)}KB`);
+
